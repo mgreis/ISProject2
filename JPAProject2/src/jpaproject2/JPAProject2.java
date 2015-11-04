@@ -5,7 +5,8 @@
  */
 package jpaproject2;
 
-import entities.MusicEntity;
+import entities.MusicFileEntity;
+import entities.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -30,38 +31,38 @@ public class JPAProject2 {
      */
     public static void main(String[] args) {
 
-        ArrayList<MusicEntity> musicList = new ArrayList();
+        ArrayList<UserEntity> userList = new ArrayList();
 
-        musicList.add(new MusicEntity("Smells Like Teen Spirits", "Nevermind01.mp3"));
-        musicList.add(new MusicEntity("Jeremy", "Ten06.mp3"));
+        
+        userList.add(new UserEntity("jeremy@pearljam.com", "ten"));
 
         EntityManagerFactory emf
                 = Persistence.createEntityManagerFactory("JPAPROJECT2PU");
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
-        for (MusicEntity music : musicList) {
-            em.persist(music);
+        for (UserEntity user : userList) {
+            em.persist(user);
         }
         tx.commit();
-        getMusics(em);
+        //getMusics(em);
     }
 
     public static void getMusics(EntityManager em) {
         final CriteriaBuilder builder = em.getCriteriaBuilder();
-        final CriteriaQuery<MusicEntity> query = builder.createQuery(MusicEntity.class);
+        final CriteriaQuery<MusicFileEntity> query = builder.createQuery(MusicFileEntity.class);
 
         // build query
-        final Root<MusicEntity> musics = query.from(MusicEntity.class);
+        final Root<MusicFileEntity> musics = query.from(MusicFileEntity.class);
 
         //executes the query
         query.select(musics);
-        TypedQuery<MusicEntity> q = em.createQuery(query);
-        List<MusicEntity> allMusics = q.getResultList();
+        TypedQuery<MusicFileEntity> q = em.createQuery(query);
+        List<MusicFileEntity> allMusics = q.getResultList();
 
         //prints results
-        for (MusicEntity m : allMusics) {
-            System.out.println(m.getName() + " : " + m.getFilename());
+        for (MusicFileEntity m : allMusics) {
+            //System.out.println(m.getName() + " : " + m.getFilename());
         }
     }
 }
