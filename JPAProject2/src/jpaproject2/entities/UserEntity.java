@@ -3,37 +3,33 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package entities;
+package jpaproject2.entities;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  *
  * @author Mário
  */
 @Entity
-public class PlaylistFileEntity implements Serializable {
+@Table(name = "USER")
+public class UserEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Id
-    @ManyToOne
-    @JoinColumn(name="playlist_id")
-    private PlaylistEntity playlist;
+    private String email;
+    private String password;
     
-    @ManyToOne
-    @JoinColumn(name = "musicfile_id")
-    private MusicFileEntity musicFile;
-    
-    
-    
+    public UserEntity(String email, String password){
+        this.setEmail(email);
+        this.setPassword(password);
+    }
 
     public Long getId() {
         return id;
@@ -53,10 +49,10 @@ public class PlaylistFileEntity implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof PlaylistFileEntity)) {
+        if (!(object instanceof UserEntity)) {
             return false;
         }
-        PlaylistFileEntity other = (PlaylistFileEntity) object;
+        UserEntity other = (UserEntity) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -65,7 +61,35 @@ public class PlaylistFileEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.PlaylistFileEntity[ id=" + id + " ]";
+        return "entities.User[ id=" + id + " ]";
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
     }
     
 }

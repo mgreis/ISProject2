@@ -3,33 +3,43 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package entities;
+package jpaproject2.entities;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  *
  * @author Mário
  */
 @Entity
-public class PlaylistEntity implements Serializable {
+@Table(name = "PLAYLISTFILE")
+@IdClass(value=PlaylistFilePK.class)
+public class PlaylistFileEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
+    @Id
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @JoinColumn(name="playlist_id")
+    private PlaylistEntity playlist;
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "musicfile_id")
+    private MusicFileEntity musicFile;
     
-    private String name;
-    
+    public PlaylistFileEntity(PlaylistEntity playlist,MusicFileEntity musicFile){
+        this.setPlaylist(playlist);
+        this.setMusicFile(musicFile);
+    }
     
 
     public Long getId() {
@@ -50,10 +60,10 @@ public class PlaylistEntity implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof PlaylistEntity)) {
+        if (!(object instanceof PlaylistFileEntity)) {
             return false;
         }
-        PlaylistEntity other = (PlaylistEntity) object;
+        PlaylistFileEntity other = (PlaylistFileEntity) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -62,35 +72,35 @@ public class PlaylistEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.PlaylistEntity[ id=" + id + " ]";
+        return "entities.PlaylistFileEntity[ id=" + id + " ]";
     }
 
     /**
-     * @return the user
+     * @return the playlist
      */
-    public UserEntity getUser() {
-        return user;
+    public PlaylistEntity getPlaylist() {
+        return playlist;
     }
 
     /**
-     * @param user the user to set
+     * @param playlist the playlist to set
      */
-    public void setUser(UserEntity user) {
-        this.user = user;
+    public void setPlaylist(PlaylistEntity playlist) {
+        this.playlist = playlist;
     }
 
     /**
-     * @return the name
+     * @return the musicFile
      */
-    public String getName() {
-        return name;
+    public MusicFileEntity getMusicFile() {
+        return musicFile;
     }
 
     /**
-     * @param name the name to set
+     * @param musicFile the musicFile to set
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setMusicFile(MusicFileEntity musicFile) {
+        this.musicFile = musicFile;
     }
     
 }

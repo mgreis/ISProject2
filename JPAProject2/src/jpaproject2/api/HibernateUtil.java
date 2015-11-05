@@ -1,4 +1,4 @@
-package jpaproject2;
+package jpaproject2.api;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;

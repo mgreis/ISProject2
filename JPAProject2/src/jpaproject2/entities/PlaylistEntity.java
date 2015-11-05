@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package entities;
+package jpaproject2.entities;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -17,18 +19,22 @@ import javax.persistence.Table;
  * @author Mário
  */
 @Entity
-@Table(name = "USER")
-public class UserEntity implements Serializable {
+@Table(name = "PLAYLIST")
+public class PlaylistEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String email;
-    private String password;
     
-    public UserEntity(String email, String password){
-        this.setEmail(email);
-        this.setPassword(password);
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+    
+    private String name;
+    
+    public PlaylistEntity(String name,UserEntity user){
+        this.setName(name);
+        this.setUser(user);
     }
 
     public Long getId() {
@@ -49,10 +55,10 @@ public class UserEntity implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof UserEntity)) {
+        if (!(object instanceof PlaylistEntity)) {
             return false;
         }
-        UserEntity other = (UserEntity) object;
+        PlaylistEntity other = (PlaylistEntity) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -61,35 +67,35 @@ public class UserEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.User[ id=" + id + " ]";
+        return "entities.PlaylistEntity[ id=" + id + " ]";
     }
 
     /**
-     * @return the email
+     * @return the user
      */
-    public String getEmail() {
-        return email;
+    public UserEntity getUser() {
+        return user;
     }
 
     /**
-     * @param email the email to set
+     * @param user the user to set
      */
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     /**
-     * @return the password
+     * @return the name
      */
-    public String getPassword() {
-        return password;
+    public String getName() {
+        return name;
     }
 
     /**
-     * @param password the password to set
+     * @param name the name to set
      */
-    public void setPassword(String password) {
-        this.password = password;
+    public void setName(String name) {
+        this.name = name;
     }
     
 }
