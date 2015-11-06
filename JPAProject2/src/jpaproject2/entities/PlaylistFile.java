@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -32,11 +33,11 @@ public class PlaylistFile implements Serializable {
     private Long id;
 
     @ManyToOne
-    @Column(nullable = false)
+    @JoinColumn(nullable = false)
     private Playlist playlist;
 
     @ManyToOne
-    @Column(nullable = false)
+    @JoinColumn(nullable = false)
     private MusicFile musicFile;
 
     @Column(nullable = false)
