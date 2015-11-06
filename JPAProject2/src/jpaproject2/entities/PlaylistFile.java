@@ -23,7 +23,7 @@ import javax.persistence.UniqueConstraint;
  * @author Flávio J. Saraiva
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"playlist", "index"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"playlist_id", "position"}))
 public class PlaylistFile implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,7 +41,7 @@ public class PlaylistFile implements Serializable {
     private MusicFile musicFile;
 
     @Column(nullable = false)
-    private int index;
+    private int position;
 
     public PlaylistFile() {
     }
@@ -88,17 +88,17 @@ public class PlaylistFile implements Serializable {
     }
 
     /**
-     * @return the index
+     * @return the position
      */
-    public int getIndex() {
-        return index;
+    public int getPosition() {
+        return position;
     }
 
     /**
-     * @param index the index to set
+     * @param index the position to set
      */
-    public void setIndex(int index) {
-        this.index = index;
+    public void setPosition(int index) {
+        this.position = index;
     }
 
     @Override
@@ -131,8 +131,8 @@ public class PlaylistFile implements Serializable {
         buf.append(playlist != null ? playlist.getId() : null);
         buf.append(", musicFile=");
         buf.append(musicFile != null ? musicFile.getId() : null);
-        buf.append(", index=");
-        buf.append(index);
+        buf.append(", position=");
+        buf.append(position);
         buf.append(" ]");
         return buf.toString();
     }
