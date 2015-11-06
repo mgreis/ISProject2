@@ -5,8 +5,8 @@
  */
 package jpaproject2.api;
 
-import jpaproject2.entities.MusicFileEntity;
-import jpaproject2.entities.UserEntity;
+import jpaproject2.entities.MusicFile;
+import jpaproject2.entities.Person;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -17,8 +17,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
 
 /**
  *
@@ -31,17 +29,16 @@ public class JPAProject2 {
      */
     public static void main(String[] args) {
 
-        ArrayList<UserEntity> userList = new ArrayList();
+        ArrayList<Person> userList = new ArrayList();
 
-        
-        userList.add(new UserEntity("jeremy@pearljam.com", "ten"));
+        userList.add(new Person("jeremy@pearljam.com", "ten"));
 
         EntityManagerFactory emf
                 = Persistence.createEntityManagerFactory("JPAPROJECT2PU");
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
-        for (UserEntity user : userList) {
+        for (Person user : userList) {
             em.persist(user);
         }
         tx.commit();
@@ -50,18 +47,18 @@ public class JPAProject2 {
 
     public static void getMusics(EntityManager em) {
         final CriteriaBuilder builder = em.getCriteriaBuilder();
-        final CriteriaQuery<MusicFileEntity> query = builder.createQuery(MusicFileEntity.class);
+        final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
 
         // build query
-        final Root<MusicFileEntity> musics = query.from(MusicFileEntity.class);
+        final Root<MusicFile> musics = query.from(MusicFile.class);
 
         //executes the query
         query.select(musics);
-        TypedQuery<MusicFileEntity> q = em.createQuery(query);
-        List<MusicFileEntity> allMusics = q.getResultList();
+        TypedQuery<MusicFile> q = em.createQuery(query);
+        List<MusicFile> allMusics = q.getResultList();
 
         //prints results
-        for (MusicFileEntity m : allMusics) {
+        for (MusicFile m : allMusics) {
             //System.out.println(m.getName() + " : " + m.getFilename());
         }
     }

@@ -6,72 +6,61 @@
 package jpaproject2.api;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
-import jpaproject2.entities.MusicFileEntity;
-import jpaproject2.entities.PlaylistEntity;
-import jpaproject2.entities.PlaylistFileEntity;
-import jpaproject2.entities.PlaylistFilePK;
-import jpaproject2.entities.UserEntity;
+import jpaproject2.entities.MusicFile;
+import jpaproject2.entities.Playlist;
+import jpaproject2.entities.PlaylistFile;
+import jpaproject2.entities.Person;
 
 /**
  *
  * @author Mário
  */
-public class DatabaseEngine {
-    
-    private EntityManager entityManager;
-    private EntityManagerFactory entityManagerFactory;
-    
-    public DatabaseEngine() {
+public class Database implements AutoCloseable {
+
+    private final EntityManager entityManager;
+    private final EntityManagerFactory entityManagerFactory;
+
+    public Database() {
         entityManagerFactory = Persistence.createEntityManagerFactory("JPAPROJECT2PU");
-        this.entityManager = entityManagerFactory.createEntityManager();
+        entityManager = entityManagerFactory.createEntityManager();
     }
 
-    /**
-     * Closes the engine
-     */
-    public void EngineClose() {
+    @Override
+    public void close() {
         entityManager.close();
         entityManagerFactory.close();
     }
-    
-    
 
     /**
      * creates a musicFile row in the database
      *
-     * @param user
+     * @param owner
      * @param title
      * @param artist
      * @param album
      * @param releaseYear
      * @param filePath
      */
-    public void createMusicFile(UserEntity user, String title, String artist, String album, int releaseYear, String filePath) {
-        
-        this.insertObject(new MusicFileEntity(user, title, artist, album, releaseYear, filePath));
-        
+    public void createMusicFile(Person owner, String title, String artist, String album, Date releaseYear, String filePath) {
+        insertObject(new MusicFile(owner, title, artist, album, releaseYear, filePath));
     }
 
     /**
      * creates a playlist row in the database
      *
      * @param name
-     * @param user
+     * @param owner
      */
-    public void createPlaylist(String name, UserEntity user) {
-        
-        this.insertObject(new PlaylistEntity(name, user));
-        
+    public void createPlaylist(String name, Person owner) {
+        insertObject(new Playlist(name, owner));
     }
 
     /**
@@ -80,8 +69,9 @@ public class DatabaseEngine {
      * @param playlist
      * @param musicFile
      */
-    public void createPlaylistFile(PlaylistEntity playlist, MusicFileEntity musicFile) {
-        this.insertObject(new PlaylistFileEntity(playlist, musicFile));
+    public void createPlaylistFile(Playlist playlist, MusicFile musicFile) {
+        // @todo index
+        insertObject(new PlaylistFile(playlist, musicFile));
     }
 
     /**
@@ -91,15 +81,13 @@ public class DatabaseEngine {
      * @param password
      */
     public void createUser(String email, String password) {
-        
-        this.insertObject(new UserEntity(email, password));
-        
+        insertObject(new Person(email, password));
     }
-    
+
     public void detatchUserFromMusicFile(Long id) {
-        MusicFileEntity musicFile = findMusicFile(id);
         entityManager.getTransaction().begin();
-        musicFile.setUser(null);
+        final MusicFile musicFile = findMusicFile(id);
+        musicFile.setOwner(null);
         entityManager.getTransaction().commit();
     }
 
@@ -110,7 +98,7 @@ public class DatabaseEngine {
      */
     public void deleteMusicFile(Long id) {
         entityManager.getTransaction().begin();
-        entityManager.remove(entityManager.find(MusicFileEntity.class, id));
+        entityManager.remove(entityManager.find(MusicFile.class, id));
         entityManager.getTransaction().commit();
     }
 
@@ -121,7 +109,7 @@ public class DatabaseEngine {
      */
     public void deletePlaylist(Long id) {
         entityManager.getTransaction().begin();
-        entityManager.remove(entityManager.find(PlaylistEntity.class, id));
+        entityManager.remove(entityManager.find(Playlist.class, id));
         entityManager.getTransaction().commit();
     }
 
@@ -130,10 +118,9 @@ public class DatabaseEngine {
      *
      * @param id
      */
-    public void deletePlaylistFile(PlaylistEntity playlist, MusicFileEntity musicFile, Long id) {
+    public void deletePlaylistFile(Long id) {
         entityManager.getTransaction().begin();
-        PlaylistFilePK aux = new PlaylistFilePK(playlist, musicFile, id);
-        entityManager.remove(entityManager.find(PlaylistFileEntity.class, aux));
+        entityManager.remove(entityManager.find(PlaylistFile.class, id));
         entityManager.getTransaction().commit();
     }
 
@@ -144,7 +131,7 @@ public class DatabaseEngine {
      */
     public void deleteUser(Long id) {
         entityManager.getTransaction().begin();
-        entityManager.remove(entityManager.find(UserEntity.class, id));
+        entityManager.remove(entityManager.find(Person.class, id));
         entityManager.getTransaction().commit();
     }
 
@@ -165,8 +152,8 @@ public class DatabaseEngine {
      * @param id
      * @return
      */
-    public MusicFileEntity findMusicFile(Long id) {
-        return entityManager.find(MusicFileEntity.class, id);
+    public MusicFile findMusicFile(Long id) {
+        return entityManager.find(MusicFile.class, id);
     }
 
     /**
@@ -175,21 +162,18 @@ public class DatabaseEngine {
      * @param id
      * @return
      */
-    public PlaylistEntity findPlaylist(Long id) {
-        return entityManager.find(PlaylistEntity.class, id);
+    public Playlist findPlaylist(Long id) {
+        return entityManager.find(Playlist.class, id);
     }
 
     /**
      * returns a playListFile with a certain pk
      *
-     * @param playlist
-     * @param musicFile
      * @param id
      * @return
      */
-    public PlaylistFileEntity findPlaylistFile(PlaylistEntity playlist, MusicFileEntity musicFile, Long id) {
-        PlaylistFilePK aux = new PlaylistFilePK(playlist, musicFile, id);
-        return entityManager.find(PlaylistFileEntity.class, aux);
+    public PlaylistFile findPlaylistFile(Long id) {
+        return entityManager.find(PlaylistFile.class, id);
     }
 
     /**
@@ -198,92 +182,91 @@ public class DatabaseEngine {
      * @param id
      * @return
      */
-    public UserEntity findUser(Long id) {
-        return entityManager.find(UserEntity.class, id);
+    public Person findUser(Long id) {
+        return entityManager.find(Person.class, id);
     }
+
     /**
      * get musics from othe users
+     *
      * @param id
-     * @return 
+     * @return
      */
-    
-    public ArrayList<MusicFileEntity> getMusicsFromUser(Long id) {
-        ArrayList<MusicFileEntity> musicList = new ArrayList<MusicFileEntity>();
+    public ArrayList<MusicFile> getMusicsFromUser(Long id) {
+        final ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<MusicFileEntity> query = builder.createQuery(MusicFileEntity.class);
+        final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
 
         // build query
         //final Root <MusicFileEntity> musics = query.from(MusicFileEntity.class);
-        
-
         //executes the query to get the musics primary key
-        List<MusicFileEntity> auxList = entityManager.createQuery(query).getResultList();
+        final List<MusicFile> auxList = entityManager.createQuery(query).getResultList();
 
         //put query result into an arraylist
-        for (MusicFileEntity auxVar : auxList) {
-            if(auxVar.getUser()!=null&&id==auxVar.getUser().getId())musicList.add(auxVar);
+        for (MusicFile auxVar : auxList) {
+            if (auxVar.getOwner() != null && id == auxVar.getOwner().getId()) {
+                musicList.add(auxVar);
+            }
         }
         //return the arrayList
         return musicList;
     }
-    
-    
-    
-    public ArrayList<MusicFileEntity> getMusicsByArtist(String artist) {
-        ArrayList<MusicFileEntity> musicList = new ArrayList<MusicFileEntity>();
+
+    public ArrayList<MusicFile> getMusicsByArtist(String artist) {
+        final ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<MusicFileEntity> query = builder.createQuery(MusicFileEntity.class);
+        final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
 
         // build query
         //final Root <MusicFileEntity> musics = query.from(MusicFileEntity.class);
-        
-
         //executes the query to get the musics primary key
-        List<MusicFileEntity> auxList = entityManager.createQuery(query).getResultList();
+        final List<MusicFile> auxList = entityManager.createQuery(query).getResultList();
 
         //put query result into an arraylist
-        for (MusicFileEntity auxVar : auxList) {
-            if(auxVar.getArtist().contains(artist))musicList.add(auxVar);
+        for (MusicFile auxVar : auxList) {
+            if (auxVar.getArtist().contains(artist)) {
+                musicList.add(auxVar);
+            }
         }
         //return the arrayList
         return musicList;
     }
-    
-    public ArrayList<MusicFileEntity> getMusicsByArtistAndTitle(String artist,String title) {
-        ArrayList<MusicFileEntity> musicList = new ArrayList<MusicFileEntity>();
+
+    public ArrayList<MusicFile> getMusicsByArtistAndTitle(String artist, String title) {
+        ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<MusicFileEntity> query = builder.createQuery(MusicFileEntity.class);
+        final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
 
         // build query
         //final Root <MusicFileEntity> musics = query.from(MusicFileEntity.class);
-        
-
         //executes the query to get the musics primary key
-        List<MusicFileEntity> auxList = entityManager.createQuery(query).getResultList();
+        final List<MusicFile> auxList = entityManager.createQuery(query).getResultList();
 
         //put query result into an arraylist
-        for (MusicFileEntity auxVar : auxList) {
-            if(auxVar.getArtist().contains(artist) && auxVar.getTitle().contains(title) )musicList.add(auxVar);
+        for (MusicFile auxVar : auxList) {
+            if (auxVar.getArtist().contains(artist) && auxVar.getTitle().contains(title)) {
+                musicList.add(auxVar);
+            }
         }
         //return the arrayList
         return musicList;
     }
-    
-    public ArrayList<MusicFileEntity> getMusicsByTitle(String title) {
-        ArrayList<MusicFileEntity> musicList = new ArrayList<MusicFileEntity>();
+
+    public ArrayList<MusicFile> getMusicsByTitle(String title) {
+        final ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<MusicFileEntity> query = builder.createQuery(MusicFileEntity.class);
+        final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
 
         // build query
         //final Root <MusicFileEntity> musics = query.from(MusicFileEntity.class);
-        
-
         //executes the query to get the musics primary key
-        List<MusicFileEntity> auxList = entityManager.createQuery(query).getResultList();
+        final List<MusicFile> auxList = entityManager.createQuery(query).getResultList();
 
         //put query result into an arraylist
-        for (MusicFileEntity auxVar : auxList) {
-            if(auxVar.getTitle().equalsIgnoreCase(title))musicList.add(auxVar);
+        for (MusicFile auxVar : auxList) {
+            if (auxVar.getTitle().equalsIgnoreCase(title)) {
+                musicList.add(auxVar);
+            }
         }
         //return the arrayList
         return musicList;
@@ -295,67 +278,68 @@ public class DatabaseEngine {
      * @param id
      * @return
      */
-    public ArrayList<MusicFileEntity> getMusicsFromPlaylist(Long id) {
-        ArrayList<MusicFileEntity> musicList = new ArrayList<MusicFileEntity>();
+    public ArrayList<MusicFile> getMusicsFromPlaylist(Long id) {
+        final ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<PlaylistFileEntity> query = builder.createQuery(PlaylistFileEntity.class);
+        final CriteriaQuery<PlaylistFile> query = builder.createQuery(PlaylistFile.class);
 
         // build query
-        final Root<PlaylistFileEntity> musics = query.from(PlaylistFileEntity.class);
+        final Root<PlaylistFile> musics = query.from(PlaylistFile.class);
         query.where(builder.equal(musics.get("playlist_id"), id)).orderBy(builder.asc(musics.get("id")));
 
         //executes the query to get the musics primary key
-        List<PlaylistFileEntity> auxList = entityManager.createQuery(query).getResultList();
+        final List<PlaylistFile> auxList = entityManager.createQuery(query).getResultList();
 
         //put query result into an arraylist
-        for (PlaylistFileEntity auxVar : auxList) {
+        for (PlaylistFile auxVar : auxList) {
             musicList.add(auxVar.getMusicFile());
-            
+
         }
         //return the arrayList
         return musicList;
     }
-    
+
     /**
      * get musics from user
+     *
      * @param id
-     * @return 
+     * @return
      */
-    public ArrayList<MusicFileEntity> getMusicsFromOtherUsers(Long id) {
-        ArrayList<MusicFileEntity> musicList = new ArrayList<MusicFileEntity>();
+    public ArrayList<MusicFile> getMusicsFromOtherUsers(Long id) {
+        final ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<MusicFileEntity> query = builder.createQuery(MusicFileEntity.class);
+        final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
 
         // build query
         //final Root <MusicFileEntity> musics = query.from(MusicFileEntity.class);
-        
-
         //executes the query to get the musics primary key
-        List<MusicFileEntity> auxList = entityManager.createQuery(query).getResultList();
+        final List<MusicFile> auxList = entityManager.createQuery(query).getResultList();
 
         //put query result into an arraylist
-        for (MusicFileEntity auxVar : auxList) {
-            if(auxVar.getUser()!=null&&id==auxVar.getUser().getId())musicList.add(auxVar);
+        for (MusicFile auxVar : auxList) {
+            if (auxVar.getOwner() != null && id == auxVar.getOwner().getId()) {
+                musicList.add(auxVar);
+            }
         }
         //return the arrayList
         return musicList;
     }
-    
+
     /**
      * Inserts a music list into a playlist
+     *
      * @param musicList
-     * @param playlist 
+     * @param playlist
      */
-    public void InsertMusicListToPlaylist(ArrayList <MusicFileEntity> musicList , PlaylistEntity playlist){
-        for(MusicFileEntity music: musicList){
+    public void InsertMusicListToPlaylist(ArrayList<MusicFile> musicList, Playlist playlist) {
+        for (MusicFile music : musicList) {
             this.createPlaylistFile(playlist, music);
         }
     }
-    
+
     public void updatePlaylist(Long id, String name) {
-        
-        PlaylistEntity playlist = findPlaylist(id);
         entityManager.getTransaction().begin();
+        Playlist playlist = findPlaylist(id);
         playlist.setName(name);
         entityManager.getTransaction().commit();
     }
@@ -366,10 +350,9 @@ public class DatabaseEngine {
      * @param id
      * @param name
      */
-    public void updateMusicFile(Long id, String album, String artist, String filePath, int releaseYear, String title) {
-        
-        MusicFileEntity musicFile = findMusicFile(id);
+    public void updateMusicFile(Long id, String album, String artist, String filePath, Date releaseYear, String title) {
         entityManager.getTransaction().begin();
+        final MusicFile musicFile = findMusicFile(id);
         musicFile.setAlbum(album);
         musicFile.setArtist(artist);
         musicFile.setFilePath(filePath);
@@ -386,13 +369,12 @@ public class DatabaseEngine {
      * @param password
      */
     public void updateUser(Long id, String email, String password) {
-        
-        UserEntity user = findUser(id);
         entityManager.getTransaction().begin();
+        Person user = findUser(id);
         user.setEmail(email);
         user.setPassword(password);
         entityManager.getTransaction().commit();
-        
+
     }
-    
+
 }
