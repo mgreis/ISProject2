@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jpaproject2.api;
+package is.project2.jpa.api;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,10 +14,10 @@ import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import jpaproject2.entities.MusicFile;
-import jpaproject2.entities.Playlist;
-import jpaproject2.entities.PlaylistFile;
-import jpaproject2.entities.Person;
+import is.project2.jpa.entities.MusicFile;
+import is.project2.jpa.entities.Playlist;
+import is.project2.jpa.entities.PlaylistFile;
+import is.project2.jpa.entities.Person;
 
 /**
  *

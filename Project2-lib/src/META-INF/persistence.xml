@@ -2,10 +2,10 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="JPAPROJECT2PU" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <class>jpaproject2.entities.PlaylistFile</class>
-    <class>jpaproject2.entities.Person</class>
-    <class>jpaproject2.entities.Playlist</class>
-    <class>jpaproject2.entities.MusicFile</class>
+    <class>is.project2.jpa.entities.Playlist</class>
+    <class>is.project2.jpa.entities.Person</class>
+    <class>is.project2.jpa.entities.PlaylistFile</class>
+    <class>is.project2.jpa.entities.MusicFile</class>
     <properties>
       <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/jpaproject2?zeroDateTimeBehavior=convertToNull"/>

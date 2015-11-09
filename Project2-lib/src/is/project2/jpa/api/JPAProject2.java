@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jpaproject2.api;
+package is.project2.jpa.api;
 
-import jpaproject2.entities.MusicFile;
-import jpaproject2.entities.Person;
+import is.project2.jpa.entities.MusicFile;
+import is.project2.jpa.entities.Person;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
