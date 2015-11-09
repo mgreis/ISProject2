@@ -23,7 +23,7 @@ public class MusicFilesState extends AbstractState {
 
     @Override
     public AbstractState process() {
-        assert(app.userId != null);
+        assert(app.accountId != null);
         try {
             final String cmd = app.read("music> ");
             switch (cmd) {

@@ -29,14 +29,14 @@ public class GuestState extends AbstractState {
 
     @Override
     public AbstractState process() {
-        app.userId = null;
+        app.accountId = null;
         try {
             final String cmd = app.read("guest> ");
             switch (cmd) {
                 case "login": {
                     final String email = app.read("email: ");
                     final char[] pass = app.readPassword("password: ");
-                    app.userId = accountManager.login(email, pass);
+                    app.accountId = accountManager.login(email, pass);
                     break;
                 }
                 case "register": {
@@ -44,7 +44,7 @@ public class GuestState extends AbstractState {
                     final char[] password = app.readPassword("password: ");
                     final char[] repeatPassword = app.readPassword("repeat password: ");
                     if (Arrays.equals(password, repeatPassword)) {
-                        app.userId = accountManager.register(email, password);
+                        app.accountId = accountManager.register(email, password);
                     }
                     break;
                 }
@@ -66,7 +66,7 @@ public class GuestState extends AbstractState {
             app.writer.println(ex);
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
         }
-        if (app.userId != null) {
+        if (app.accountId != null) {
             return new MainState(app); // user is logged in
         } else {
             return this; // not logged in, keep state

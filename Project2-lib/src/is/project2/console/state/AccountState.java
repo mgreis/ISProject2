@@ -30,18 +30,18 @@ public class AccountState extends AbstractState {
 
     @Override
     public AbstractState process() {
-        assert (app.userId != null);
+        assert (app.accountId != null);
         try {
             final String cmd = app.read("> ");
             switch (cmd) {
                 case "view": {
-                    final AccountData data = accountManager.load(app.userId);
+                    final AccountData data = accountManager.load(app.accountId);
                     app.writer.format(" email: %s\n", data.getEmail());
                     break;// @todo
                 }
                 case "change-email": {
                     final String email = app.read("email: ");
-                    final AccountData data = accountManager.load(app.userId);
+                    final AccountData data = accountManager.load(app.accountId);
                     data.setEmail(email);
                     accountManager.save(data);
                     break;
@@ -50,7 +50,7 @@ public class AccountState extends AbstractState {
                     final char[] password = app.readPassword("password: ");
                     final char[] repeatPassword = app.readPassword("repeat password: ");
                     if (Arrays.equals(password, repeatPassword)) {
-                        final AccountData data = accountManager.load(app.userId);
+                        final AccountData data = accountManager.load(app.accountId);
                         data.setPassword(password);
                         accountManager.save(data);
                     }

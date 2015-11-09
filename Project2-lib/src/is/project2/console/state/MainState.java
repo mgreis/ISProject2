@@ -22,7 +22,7 @@ public class MainState extends AbstractState {
 
     @Override
     public AbstractState process() {
-        assert (app.userId != null);
+        assert (app.accountId != null);
         try {
             final String cmd = app.read("> ");
             switch (cmd) {

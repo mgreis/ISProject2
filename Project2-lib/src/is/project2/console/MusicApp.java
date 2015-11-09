@@ -28,7 +28,7 @@ public class MusicApp implements Runnable {
     public final PrintWriter writer;
     @EJB
     public MusicAppBeanRemote remote;
-    public Long userId;
+    public Long accountId;
 
     public MusicApp(String[] args) {
         console = System.console();
