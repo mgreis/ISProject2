@@ -7,14 +7,12 @@ package is.project2.console;
 
 import is.project2.console.state.AbstractState;
 import is.project2.console.state.GuestState;
-import is.project2.ejb.MusicAppBeanRemote;
 import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import javax.ejb.EJB;
 
 /**
  * Aplicação de música.
@@ -26,9 +24,8 @@ public class MusicApp implements Runnable {
     private final Console console;
     private final BufferedReader reader;
     public final PrintWriter writer;
-    @EJB
-    public MusicAppBeanRemote remote;
     public Long accountId;
+    public Long playlistId;
 
     public MusicApp(String[] args) {
         console = System.console();

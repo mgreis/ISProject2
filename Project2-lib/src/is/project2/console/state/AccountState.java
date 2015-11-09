@@ -8,7 +8,7 @@ package is.project2.console.state;
 import is.project2.console.MusicApp;
 import is.project2.ejb.AccountManagerBeanRemote;
 import is.project2.ejb.MusicAppException;
-import is.project2.ejb.data.AccountData;
+import is.project2.ejb.AccountData;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;

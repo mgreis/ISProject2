@@ -5,17 +5,13 @@
  */
 package is.project2.ejb;
 
-import is.project2.jpa.entities.Account;
-import javax.ejb.Remote;
-
 /**
- * Interface to the remote stateless app.
- *
- * @todo sending the password raw is not secure!!!
+ * Sort order for the playlist list.
  *
  * @author Flávio J. Saraiva
  */
-@Remote
-public interface MusicAppBeanRemote {
+public enum SortOrder {
 
+    ASCENDING,
+    DESCENDING
 }

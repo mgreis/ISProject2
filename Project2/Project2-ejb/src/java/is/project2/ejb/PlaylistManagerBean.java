@@ -5,15 +5,15 @@
  */
 package is.project2.ejb;
 
-import is.project2.jpa.entities.Account;
 import javax.ejb.Stateless;
 
 /**
- * Implementation of the stateless music app.
  *
- * @author Flávio J. Saraiva
+ * @author Flávio
  */
 @Stateless
-public class MusicAppBean implements MusicAppBeanRemote {
+public class PlaylistManagerBean implements PlaylistManagerBeanRemote {
 
+    // Add business logic below. (Right-click in editor and choose
+    // "Insert Code > Add Business Method")
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package is.project2.ejb.data;
+package is.project2.ejb;
 
 /**
  * Account data.

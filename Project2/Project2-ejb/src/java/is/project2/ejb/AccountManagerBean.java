@@ -5,7 +5,6 @@
  */
 package is.project2.ejb;
 
-import is.project2.ejb.data.AccountData;
 import javax.ejb.Stateless;
 
 /**

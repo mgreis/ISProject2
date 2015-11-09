@@ -26,24 +26,24 @@ public class MainState extends AbstractState {
         try {
             final String cmd = app.read("> ");
             switch (cmd) {
-                case "account": {
-                    return new AccountState(app);
-                }
                 case "playlists": {
                     return new PlaylistsState(app);
                 }
                 case "files": {
                     return new MusicFilesState(app);
                 }
+                case "account": {
+                    return new AccountState(app);
+                }
                 case "logout": {
                     return new GuestState(app);
                 }
                 default: {
                     app.writer.println("Main commands:");
-                    app.writer.println(" account - manage account");
                     app.writer.println(" playlists - manage playlists");
                     app.writer.println(" files - manage music files");
-                    app.writer.println(" logout - logout application");
+                    app.writer.println(" account");
+                    app.writer.println(" logout");
                 }
             }
         } catch (IOException ex) {
