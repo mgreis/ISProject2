@@ -70,11 +70,12 @@ public class MusicApp implements Runnable {
     /**
      * Returns a password from the console.
      *
+     * @param prefix Text to write before reading.
      * @return Password characters
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public char[] readPassword() throws IOException {
-        writer.print("password: ");
+    public char[] readPassword(String prefix) throws IOException {
+        writer.print(prefix);
         writer.flush();
         if (console != null) {
             return console.readPassword();

@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import is.project2.console.MusicApp;
 import is.project2.ejb.AccountManagerBeanRemote;
 import is.project2.ejb.MusicAppException;
+import java.util.Arrays;
 
 /**
  * O utilizador ainda não fez login.
@@ -34,14 +35,17 @@ public class GuestState extends AbstractState {
             switch (cmd) {
                 case "login": {
                     final String email = app.read("email: ");
-                    final char[] pass = app.readPassword();
+                    final char[] pass = app.readPassword("password: ");
                     app.userId = accountManager.login(email, pass);
                     break;
                 }
                 case "register": {
                     final String email = app.read("email: ");
-                    final char[] pass = app.readPassword();
-                    app.userId = accountManager.register(email, pass);
+                    final char[] password = app.readPassword("password: ");
+                    final char[] repeatPassword = app.readPassword("repeat password: ");
+                    if (Arrays.equals(password, repeatPassword)) {
+                        app.userId = accountManager.register(email, password);
+                    }
                     break;
                 }
                 case "exit": {
