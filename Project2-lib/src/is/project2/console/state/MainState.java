@@ -7,7 +7,7 @@ package is.project2.console.state;
 
 import is.project2.console.MusicApp;
 import is.project2.ejb.MusicAppException;
-import is.project2.jpa.entities.Person;
+import is.project2.jpa.entities.Account;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

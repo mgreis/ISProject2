@@ -5,7 +5,7 @@
  */
 package is.project2.ejb;
 
-import is.project2.jpa.entities.Person;
+import is.project2.jpa.entities.Account;
 import javax.ejb.Remote;
 
 /**
@@ -47,7 +47,7 @@ public interface MusicAppBeanRemote {
      * @return User data.
      * @throws MusicAppException If an error occurs.
      */
-    public Person load(Long id) throws MusicAppException;
+    public Account load(Long id) throws MusicAppException;
 
     /**
      * Saves user data.
@@ -55,7 +55,7 @@ public interface MusicAppBeanRemote {
      * @param person User data.
      * @throws MusicAppException If an error occurs.
      */
-    public void save(Person person) throws MusicAppException;
+    public void save(Account person) throws MusicAppException;
 
     /**
      * Deletes a user.

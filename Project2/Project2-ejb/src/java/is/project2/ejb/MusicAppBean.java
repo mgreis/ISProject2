@@ -5,7 +5,7 @@
  */
 package is.project2.ejb;
 
-import is.project2.jpa.entities.Person;
+import is.project2.jpa.entities.Account;
 import javax.ejb.Stateless;
 
 /**
@@ -27,12 +27,12 @@ public class MusicAppBean implements MusicAppBeanRemote {
     }
 
     @Override
-    public Person load(Long id) throws MusicAppException {
+    public Account load(Long id) throws MusicAppException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void save(Person person) throws MusicAppException {
+    public void save(Account person) throws MusicAppException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

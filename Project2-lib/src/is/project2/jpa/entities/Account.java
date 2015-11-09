@@ -16,13 +16,13 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 /**
- * Classe que representa uma pessoa.
+ * Classe que representa a conta de uma pessoa ou entidade.
  *
  * @author Mário
  * @author Flávio J. Saraiva
  */
 @Entity
-public class Person implements Serializable {
+public class Account implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,10 +42,10 @@ public class Person implements Serializable {
     @OneToMany(mappedBy = "owner")
     private Collection<Playlist> playlists;
 
-    public Person() {
+    public Account() {
     }
 
-    public Person(String email, String password) {
+    public Account(String email, String password) {
         this.email = email;
         this.password = password;
     }
@@ -116,10 +116,10 @@ public class Person implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Person)) {
+        if (!(object instanceof Account)) {
             return false;
         }
-        Person other = (Person) object;
+        Account other = (Account) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

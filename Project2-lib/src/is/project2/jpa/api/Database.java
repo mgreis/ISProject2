@@ -17,7 +17,7 @@ import javax.persistence.criteria.Root;
 import is.project2.jpa.entities.MusicFile;
 import is.project2.jpa.entities.Playlist;
 import is.project2.jpa.entities.PlaylistFile;
-import is.project2.jpa.entities.Person;
+import is.project2.jpa.entities.Account;
 
 /**
  *
@@ -49,7 +49,7 @@ public class Database implements AutoCloseable {
      * @param releaseYear
      * @param filePath
      */
-    public void createMusicFile(Person owner, String title, String artist, String album, Date releaseYear, String filePath) {
+    public void createMusicFile(Account owner, String title, String artist, String album, Date releaseYear, String filePath) {
         insertObject(new MusicFile(owner, title, artist, album, releaseYear, filePath));
     }
 
@@ -59,7 +59,7 @@ public class Database implements AutoCloseable {
      * @param name
      * @param owner
      */
-    public void createPlaylist(String name, Person owner) {
+    public void createPlaylist(String name, Account owner) {
         insertObject(new Playlist(name, owner));
     }
 
@@ -81,7 +81,7 @@ public class Database implements AutoCloseable {
      * @param password
      */
     public void createUser(String email, String password) {
-        insertObject(new Person(email, password));
+        insertObject(new Account(email, password));
     }
 
     public void detatchUserFromMusicFile(Long id) {
@@ -131,7 +131,7 @@ public class Database implements AutoCloseable {
      */
     public void deleteUser(Long id) {
         entityManager.getTransaction().begin();
-        entityManager.remove(entityManager.find(Person.class, id));
+        entityManager.remove(entityManager.find(Account.class, id));
         entityManager.getTransaction().commit();
     }
 
@@ -182,8 +182,8 @@ public class Database implements AutoCloseable {
      * @param id
      * @return
      */
-    public Person findUser(Long id) {
-        return entityManager.find(Person.class, id);
+    public Account findUser(Long id) {
+        return entityManager.find(Account.class, id);
     }
 
     /**
@@ -370,7 +370,7 @@ public class Database implements AutoCloseable {
      */
     public void updateUser(Long id, String email, String password) {
         entityManager.getTransaction().begin();
-        Person user = findUser(id);
+        Account user = findUser(id);
         user.setEmail(email);
         user.setPassword(password);
         entityManager.getTransaction().commit();

@@ -20,7 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 
 /**
- * Classe que representa um ficheiro de música de alguem.
+ * Classe que representa um ficheiro de música de uma conta.
  *
  * @author Mário
  * @author Flávio J. Saraiva
@@ -36,7 +36,7 @@ public class MusicFile implements Serializable {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Person owner;
+    private Account owner;
 
     private String title;
 
@@ -56,7 +56,7 @@ public class MusicFile implements Serializable {
     public MusicFile() {
     }
 
-    public MusicFile(Person owner, String title, String artist, String album, Date releaseYear, String filePath) {
+    public MusicFile(Account owner, String title, String artist, String album, Date releaseYear, String filePath) {
         this.owner = owner;
         this.title = title;
         this.artist = artist;
@@ -76,14 +76,14 @@ public class MusicFile implements Serializable {
     /**
      * @return the owner
      */
-    public Person getOwner() {
+    public Account getOwner() {
         return owner;
     }
 
     /**
      * @param owner the owner to set
      */
-    public void setOwner(Person owner) {
+    public void setOwner(Account owner) {
         this.owner = owner;
     }
 

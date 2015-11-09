@@ -19,7 +19,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 
 /**
- * Classe que representa uma playlist de uma pessoa.
+ * Classe que representa uma playlist de uma conta.
  *
  * @author Mário
  * @author Flávio J. Saraiva
@@ -35,7 +35,7 @@ public class Playlist implements Serializable {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Person owner;
+    private Account owner;
 
     @Column(nullable = false)
     private String name;
@@ -47,7 +47,7 @@ public class Playlist implements Serializable {
     public Playlist() {
     }
 
-    public Playlist(String name, Person owner) {
+    public Playlist(String name, Account owner) {
         this.name = name;
         this.owner = owner;
     }
@@ -63,14 +63,14 @@ public class Playlist implements Serializable {
     /**
      * @return the owner
      */
-    public Person getOwner() {
+    public Account getOwner() {
         return owner;
     }
 
     /**
      * @param owner the owner to set
      */
-    public void setOwner(Person owner) {
+    public void setOwner(Account owner) {
         this.owner = owner;
     }
 

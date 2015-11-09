@@ -6,7 +6,7 @@
 package is.project2.jpa.api;
 
 import is.project2.jpa.entities.MusicFile;
-import is.project2.jpa.entities.Person;
+import is.project2.jpa.entities.Account;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -29,16 +29,16 @@ public class JPAProject2 {
      */
     public static void main(String[] args) {
 
-        ArrayList<Person> userList = new ArrayList();
+        ArrayList<Account> userList = new ArrayList();
 
-        userList.add(new Person("jeremy@pearljam.com", "ten"));
+        userList.add(new Account("jeremy@pearljam.com", "ten"));
 
         EntityManagerFactory emf
                 = Persistence.createEntityManagerFactory("JPAPROJECT2PU");
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
-        for (Person user : userList) {
+        for (Account user : userList) {
             em.persist(user);
         }
         tx.commit();
