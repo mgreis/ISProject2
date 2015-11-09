@@ -12,18 +12,12 @@ package is.project2.ejb;
  */
 public class AccountData {
 
-    private Long id;
+    private final Long id;
     private String email;
     private char[] password;
 
     public AccountData(Long id) {
         this.id = id;
-    }
-
-    public AccountData(Long id, String email, char[] password) {
-        this(id);
-        this.email = email;
-        this.password = password;
     }
 
     /**

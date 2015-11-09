@@ -6,8 +6,6 @@
 package is.project2.jpa.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +14,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 
 /**
@@ -49,9 +46,6 @@ public class MusicFile implements Serializable {
 
     @Column(nullable = false)
     private String filePath;
-
-    @OneToMany(mappedBy = "musicFile")
-    private Collection<PlaylistFile> playlistFiles;
 
     public MusicFile() {
     }
@@ -157,16 +151,6 @@ public class MusicFile implements Serializable {
         this.filePath = filePath;
     }
 
-    /**
-     * @return the playlistFiles
-     */
-    public Collection<PlaylistFile> getPlaylistFiles() {
-        if (playlistFiles == null) {
-            playlistFiles = new ArrayList<>();
-        }
-        return playlistFiles;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -205,16 +189,7 @@ public class MusicFile implements Serializable {
         buf.append(releaseYear);
         buf.append(", filePath=");
         buf.append(filePath);
-        buf.append(", playlistFiles={");
-        boolean comma = false;
-        for (PlaylistFile playlistFile : getPlaylistFiles()) {
-            if (comma) {
-                buf.append(",");
-            }
-            buf.append(playlistFile.getId());
-            comma = true;
-        }
-        buf.append("} ]");
+        buf.append(" ]");
         return buf.toString();
     }
 

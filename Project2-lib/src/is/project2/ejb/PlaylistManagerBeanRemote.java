@@ -10,8 +10,9 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 /**
+ * Bean interface manage playlists.
  *
- * @author Flávio
+ * @author Flávio J. Saraiva
  */
 @Remote
 public interface PlaylistManagerBeanRemote {
@@ -35,5 +36,33 @@ public interface PlaylistManagerBeanRemote {
      * @throws MusicAppException If an error occurs.
      */
     public Long create(Long accountId, String name) throws MusicAppException;
+
+    /**
+     * Loads playlist data.
+     *
+     * @param accountId Account id.
+     * @param playlistId Playlist id.
+     * @return Playlist data.
+     * @throws MusicAppException If an error occurs.
+     */
+    public PlaylistData load(Long accountId, Long playlistId) throws MusicAppException;
+
+    /**
+     * Saves playlist data.
+     *
+     * @param accountId Account id.
+     * @param playlist Playlist data.
+     * @throws MusicAppException If an error occurs.
+     */
+    public void save(Long accountId, PlaylistData playlist) throws MusicAppException;
+
+    /**
+     * Deletes a playlist.
+     *
+     * @param accountId Account id.
+     * @param playlistId Playlist id.
+     * @throws MusicAppException If an error occurs.
+     */
+    public void delete(Long accountId, Long playlistId) throws MusicAppException;
 
 }

@@ -60,7 +60,7 @@ public class PlaylistsState extends AbstractState {
                     return new MainState(app);
                 }
                 case "account": {
-                    return new GuestState(app);
+                    return new AccountState(app);
                 }
                 case "logout": {
                     return new GuestState(app);
