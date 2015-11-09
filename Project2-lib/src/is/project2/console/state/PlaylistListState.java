@@ -6,7 +6,6 @@
 package is.project2.console.state;
 
 import is.project2.console.MusicApp;
-import is.project2.ejb.MusicAppException;
 import is.project2.ejb.PlaylistManagerBeanRemote;
 import is.project2.ejb.SortOrder;
 import java.io.IOException;
@@ -19,11 +18,11 @@ import java.util.logging.Logger;
  *
  * @author Flávio J. Saraiva
  */
-public class PlaylistsState extends AbstractState {
+public class PlaylistListState extends AbstractState {
 
     final private PlaylistManagerBeanRemote playlistManager;
 
-    public PlaylistsState(MusicApp app) {
+    public PlaylistListState(MusicApp app) {
         super(app);
         playlistManager = null; // @todo
     }
@@ -80,9 +79,9 @@ public class PlaylistsState extends AbstractState {
             app.writer.println(ex);
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             return null; // exit
-        } catch (NumberFormatException | MusicAppException ex) {
+        } catch (Exception ex) {
             app.writer.println(ex);
-            Logger.getLogger(PlaylistsState.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PlaylistListState.class.getName()).log(Level.SEVERE, null, ex);
         }
         return this; // keep state
     }

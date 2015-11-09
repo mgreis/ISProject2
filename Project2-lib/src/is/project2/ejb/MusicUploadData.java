@@ -5,42 +5,63 @@
  */
 package is.project2.ejb;
 
-import java.net.URI;
 import java.util.Date;
 
 /**
- * Music file data.
+ * Upload data for a new music.
  *
  * @author Flávio J. Saraiva
  */
-public class MusicFileData {
+public class MusicUploadData {
 
-    private final Long id;
-    private final URI uri;
+    private Long accountId;
+    private String filename;
+    private byte[] data;
     private String title;
     private String artist;
     private String album;
     private Date releaseYear;
 
-    public MusicFileData(Long id, URI uri) {
-        assert (id != null);
-        assert (uri != null);
-        this.id = id;
-        this.uri = uri;
+    /**
+     * @return the accountId
+     */
+    public Long getAccountId() {
+        return accountId;
     }
 
     /**
-     * @return the id
+     * @param accountId the accountId to set
      */
-    public Long getId() {
-        return id;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
     /**
-     * @return the uri
+     * @return the filename
      */
-    public URI getUri() {
-        return uri;
+    public String getFilename() {
+        return filename;
+    }
+
+    /**
+     * @param filename the filename to set
+     */
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    /**
+     * @return the data
+     */
+    public byte[] getData() {
+        return data;
+    }
+
+    /**
+     * @param data the data to set
+     */
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
     /**

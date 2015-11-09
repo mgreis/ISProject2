@@ -7,12 +7,14 @@ package is.project2.console.state;
 
 import is.project2.console.MusicApp;
 import is.project2.ejb.AccountManagerBeanRemote;
-import is.project2.ejb.MusicAppException;
 import is.project2.ejb.AccountData;
+import is.project2.ejb.Beans;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  * Manage account.
@@ -23,9 +25,9 @@ public class AccountState extends AbstractState {
 
     final private AccountManagerBeanRemote accountManager;
 
-    public AccountState(MusicApp app) {
+    public AccountState(MusicApp app) throws NamingException {
         super(app);
-        accountManager = null; // @todo
+        accountManager = InitialContext.doLookup(Beans.ACCOUNT_MANAGER_BEAN);
     }
 
     @Override
@@ -75,7 +77,7 @@ public class AccountState extends AbstractState {
             app.writer.println(ex);
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             return null; // exit
-        } catch (MusicAppException ex) {
+        } catch (Exception ex) {
             app.writer.println(ex);
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
         }

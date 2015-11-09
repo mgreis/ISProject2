@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Aplicação de música.
@@ -26,6 +28,7 @@ public class MusicApp implements Runnable {
     public final PrintWriter writer;
     public Long accountId;
     public Long playlistId;
+    public Long musicId;
 
     public MusicApp(String[] args) {
         console = System.console();
@@ -41,9 +44,14 @@ public class MusicApp implements Runnable {
     @Override
     public void run() {
         writer.println("MusicApp");
-        AbstractState state = new GuestState(this);
-        while (state != null) {
-            state = state.process();
+        try {
+            AbstractState state = new GuestState(this);
+            while (state != null) {
+                state = state.process();
+            }
+        } catch (Exception ex) {
+            writer.println(ex);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
         }
     }
 

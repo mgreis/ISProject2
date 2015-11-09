@@ -10,7 +10,7 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 /**
- * Bean interface manage playlists.
+ * Bean interface to manage playlists.
  *
  * @author Flávio J. Saraiva
  */

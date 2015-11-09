@@ -6,16 +6,18 @@
 package is.project2.console.state;
 
 import is.project2.console.MusicApp;
+import is.project2.ejb.Beans;
 import is.project2.ejb.MusicAppException;
-import is.project2.ejb.MusicFileData;
-import is.project2.ejb.MusicFileManagerBeanRemote;
+import is.project2.ejb.MusicData;
+import is.project2.ejb.MusicManagerBeanRemote;
 import is.project2.ejb.PlaylistData;
 import is.project2.ejb.PlaylistManagerBeanRemote;
 import is.project2.ejb.SearchCriteria;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  * Manage a particular playlist.
@@ -25,12 +27,12 @@ import java.util.logging.Logger;
 public class PlaylistState extends AbstractState {
 
     final private PlaylistManagerBeanRemote playlistManager;
-    final private MusicFileManagerBeanRemote musicFileManager;
+    final private MusicManagerBeanRemote musicManager;
 
-    public PlaylistState(MusicApp app) {
+    public PlaylistState(MusicApp app) throws NamingException {
         super(app);
-        playlistManager = null; // @todo
-        musicFileManager = null; // @todo
+        playlistManager = InitialContext.doLookup(Beans.PLAYLIST_MANAGER_BEAN);
+        musicManager = InitialContext.doLookup(Beans.MUSIC_MANAGER_BEAN);
     }
 
     @Override
@@ -48,29 +50,33 @@ public class PlaylistState extends AbstractState {
                     changeName();
                     break;
                 }
-                case "add-music-mine": {
-                    addMusicFileFrom(musicFileManager.getMine(app.accountId));
+                case "delete": {
+                    delete();
+                    return new PlaylistListState(app);
+                }
+                case "list-music": {
+                    listMusic(musicManager.loadAllMine(app.accountId));
                     break;
                 }
-                case "add-music-other": {
-                    addMusicFileFrom(musicFileManager.getOther(app.accountId));
+                case "list-other-music": {
+                    listMusic(musicManager.loadAllOther(app.accountId));
                     break;
                 }
-                case "add-music-other-search": {
+                case "find-other-music": {
                     final String criteria = app.read("search: ");
-                    addMusicFileFrom(musicFileManager.findOther(app.accountId, new SearchCriteria(criteria)));
+                    listMusic(musicManager.findOther(app.accountId, new SearchCriteria(criteria)));
+                    break;
+                }
+                case "add-music": {
+                    addMusic();
                     break;
                 }
                 case "remove-music": {
-                    removeMusicFile();
+                    removeMusic();
                     break;
                 }
-                case "delete": {
-                    delete();
-                    return new PlaylistsState(app);
-                }
                 case "back": {
-                    return new PlaylistsState(app);
+                    return new PlaylistListState(app);
                 }
                 case "account": {
                     return new AccountState(app);
@@ -82,11 +88,12 @@ public class PlaylistState extends AbstractState {
                     app.writer.println("Playlist commands:");
                     app.writer.println(" view - view playlist details");
                     app.writer.println(" change-name - change the name of the playlist");
-                    app.writer.println(" add-music-mine - add a music file from my collection to the playlist");
-                    app.writer.println(" add-music-other - add a music file not in my collection to the playlist");
-                    app.writer.println(" add-music-other-search - search for a music file not in my collection and add it to the playlist");
-                    app.writer.println(" remove-music - remove music from the playlist");
                     app.writer.println(" delete - delete the playlist");
+                    app.writer.println(" list-music - lists all my music");
+                    app.writer.println(" list-other-music - list all music that is not mine");
+                    app.writer.println(" find-other-music - search for music that isn't mine");
+                    app.writer.println(" add-music - add music to the playlist");
+                    app.writer.println(" remove-music - remove music from the playlist");
                     app.writer.println(" back");
                     app.writer.println(" account");
                     app.writer.println(" logout");
@@ -98,7 +105,7 @@ public class PlaylistState extends AbstractState {
             return null; // exit
         } catch (Exception ex) {
             app.writer.println(ex);
-            Logger.getLogger(PlaylistsState.class.getName()).log(Level.WARNING, null, ex);
+            Logger.getLogger(PlaylistListState.class.getName()).log(Level.WARNING, null, ex);
         }
         return this; // keep state
     }
@@ -118,14 +125,15 @@ public class PlaylistState extends AbstractState {
 
     private void viewPlaylist() throws MusicAppException {
         final PlaylistData playlist = load();
+        final MusicData[] musicList = musicManager.load(playlist.getMusic().toArray(new Long[0]));
         app.writer.format(" name: %s\n", playlist.getName());
-        for (int index = 0; index < playlist.getMusicFiles().size(); index++) {
-            final MusicFileData musicFile = playlist.getMusicFiles().get(index);
-            app.writer.format(" [index=%d,id=%d] %s\n", index, musicFile.getId(), musicFile.getUri());
-            app.writer.format("  title  : %s\n", musicFile.getTitle());
-            app.writer.format("  artist : %s\n", musicFile.getArtist());
-            app.writer.format("  album  : %s\n", musicFile.getAlbum());
-            app.writer.format("  year   : %s\n", musicFile.getReleaseYear());
+        for (int index = 0; index < musicList.length; index++) {
+            final MusicData music = musicList[index];
+            app.writer.format(" [index=%d,id=%d] %s\n", index, music.getId(), music.getUri());
+            app.writer.format("  title  : %s\n", music.getTitle());
+            app.writer.format("  artist : %s\n", music.getArtist());
+            app.writer.format("  album  : %s\n", music.getAlbum());
+            app.writer.format("  year   : %s\n", music.getReleaseYear());
         }
     }
 
@@ -136,30 +144,33 @@ public class PlaylistState extends AbstractState {
         save(playlist);
     }
 
-    private void addMusicFileFrom(Collection<MusicFileData> musicFiles) throws IOException, MusicAppException {
-        for (final MusicFileData musicFile : musicFiles) {
-            app.writer.format(" [id=%d] %s\n", musicFile.getId(), musicFile.getUri());
-            app.writer.format("  title  : %s\n", musicFile.getTitle());
-            app.writer.format("  artist : %s\n", musicFile.getArtist());
-            app.writer.format("  album  : %s\n", musicFile.getAlbum());
-            app.writer.format("  year   : %s\n", musicFile.getReleaseYear());
+    private void listMusic(MusicData[] musicList) {
+        assert (musicList != null);
+        for (final MusicData music : musicList) {
+            app.writer.format(" [id=%d] %s\n", music.getId(), music.getUri());
+            app.writer.format("  title  : %s\n", music.getTitle());
+            app.writer.format("  artist : %s\n", music.getArtist());
+            app.writer.format("  album  : %s\n", music.getAlbum());
+            app.writer.format("  year   : %s\n", music.getReleaseYear());
         }
-        final long id = Long.parseLong(app.read("id: "));
-        for (MusicFileData musicFile : musicFiles) {
-            if (musicFile.getId().equals(id)) {
-                final PlaylistData playlist = load();
-                final int index = Integer.parseInt(app.read("index[0.." + String.valueOf(playlist.getMusicFiles().size()) + "]: "));
-                playlist.getMusicFiles().add(index, musicFile);
-                save(playlist);
-            }
-        }
-        app.writer.println("id not listed");
     }
 
-    private void removeMusicFile() throws MusicAppException, IOException {
+    private void addMusic() throws IOException, MusicAppException {
+        final long musicId = Long.parseLong(app.read("id: "));
         final PlaylistData playlist = load();
-        final int index = Integer.parseInt(app.read("index[0.." + String.valueOf(playlist.getMusicFiles().size() - 1) + "]: "));
-        playlist.getMusicFiles().remove(index);
+        final int index = Integer.parseInt(app.read("index(0.." + String.valueOf(playlist.getMusic().size()) + "): "));
+        playlist.getMusic().add(index, musicId);
+        save(playlist);
+    }
+
+    private void removeMusic() throws MusicAppException, IOException {
+        final PlaylistData playlist = load();
+        if (playlist.getMusic().isEmpty()) {
+            app.writer.println("playlist is empty");
+            return;
+        }
+        final int index = Integer.parseInt(app.read("index(0.." + String.valueOf(playlist.getMusic().size() - 1) + "): "));
+        playlist.getMusic().remove(index);
         save(playlist);
     }
 

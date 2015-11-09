@@ -10,8 +10,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import is.project2.console.MusicApp;
 import is.project2.ejb.AccountManagerBeanRemote;
+import is.project2.ejb.Beans;
 import is.project2.ejb.MusicAppException;
 import java.util.Arrays;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  * O utilizador ainda não fez login.
@@ -22,9 +25,9 @@ public class GuestState extends AbstractState {
 
     public final AccountManagerBeanRemote accountManager;
 
-    public GuestState(MusicApp app) {
+    public GuestState(MusicApp app) throws NamingException {
         super(app);
-        accountManager = null; // @todo lookup
+        accountManager = InitialContext.doLookup(Beans.ACCOUNT_MANAGER_BEAN);
     }
 
     @Override

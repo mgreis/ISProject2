@@ -15,7 +15,7 @@ public class PlaylistData {
 
     private final Long id;
     private String name;
-    private ArrayList<MusicFileData> musicFiles;
+    private ArrayList<Long> music;
 
     public PlaylistData(Long id) {
         assert (id != null);
@@ -44,12 +44,12 @@ public class PlaylistData {
     }
 
     /**
-     * @return the musicFiles
+     * @return the music
      */
-    public ArrayList<MusicFileData> getMusicFiles() {
-        if (musicFiles == null) {
-            musicFiles = new ArrayList<>();
+    public ArrayList<Long> getMusic() {
+        if (music == null) {
+            music = new ArrayList<>();
         }
-        return musicFiles;
+        return music;
     }
 }

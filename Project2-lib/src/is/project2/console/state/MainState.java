@@ -27,10 +27,10 @@ public class MainState extends AbstractState {
             final String cmd = app.read("> ");
             switch (cmd) {
                 case "playlists": {
-                    return new PlaylistsState(app);
+                    return new PlaylistListState(app);
                 }
                 case "files": {
-                    return new MusicFilesState(app);
+                    return new MusicListState(app);
                 }
                 case "account": {
                     return new AccountState(app);
@@ -50,6 +50,9 @@ public class MainState extends AbstractState {
             app.writer.println(ex);
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             return null; // exit
+        } catch (Exception ex) {
+            app.writer.println(ex);
+            Logger.getLogger(MainState.class.getName()).log(Level.SEVERE, null, ex);
         }
         return this; // keep state
     }
