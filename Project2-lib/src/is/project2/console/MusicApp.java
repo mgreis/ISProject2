@@ -6,7 +6,7 @@
 package is.project2.console;
 
 import is.project2.console.state.AbstractState;
-import is.project2.console.state.InitialState;
+import is.project2.console.state.GuestState;
 import is.project2.ejb.MusicAppBeanRemote;
 import java.io.BufferedReader;
 import java.io.Console;
@@ -28,7 +28,7 @@ public class MusicApp implements Runnable {
     public final PrintWriter writer;
     @EJB
     public MusicAppBeanRemote remote;
-    public Long user;
+    public Long userId;
 
     public MusicApp(String[] args) {
         console = System.console();
@@ -44,7 +44,7 @@ public class MusicApp implements Runnable {
     @Override
     public void run() {
         writer.println("MusicApp");
-        AbstractState state = new InitialState(this);
+        AbstractState state = new GuestState(this);
         while (state != null) {
             state = state.process();
         }

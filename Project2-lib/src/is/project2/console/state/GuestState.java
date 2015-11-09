@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import is.project2.console.MusicApp;
+import is.project2.ejb.AccountManagerBeanRemote;
 import is.project2.ejb.MusicAppException;
 
 /**
@@ -16,28 +17,31 @@ import is.project2.ejb.MusicAppException;
  *
  * @author Flávio J. Saraiva
  */
-public class InitialState extends AbstractState {
+public class GuestState extends AbstractState {
 
-    public InitialState(MusicApp app) {
+    public final AccountManagerBeanRemote accountManager;
+
+    public GuestState(MusicApp app) {
         super(app);
+        accountManager = null; // @todo lookup
     }
 
     @Override
     public AbstractState process() {
-        app.user = null;
+        app.userId = null;
         try {
             final String cmd = app.read("guest> ");
             switch (cmd) {
                 case "login": {
                     final String email = app.read("email: ");
                     final char[] pass = app.readPassword();
-                    app.user = app.remote.login(email, pass);
+                    app.userId = accountManager.login(email, pass);
                     break;
                 }
                 case "register": {
                     final String email = app.read("email: ");
                     final char[] pass = app.readPassword();
-                    app.user = app.remote.register(email, pass);
+                    app.userId = accountManager.register(email, pass);
                     break;
                 }
                 case "exit": {
@@ -51,16 +55,17 @@ public class InitialState extends AbstractState {
                 }
             }
         } catch (IOException ex) {
+            app.writer.println(ex);
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             return null; // exit
         } catch (MusicAppException ex) {
             app.writer.println(ex);
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
         }
-        if (app.user != null) {
+        if (app.userId != null) {
             return new MainState(app); // user is logged in
         } else {
-            return this; // not logged in, same state
+            return this; // not logged in, keep state
         }
     }
 

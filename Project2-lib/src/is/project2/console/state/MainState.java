@@ -6,15 +6,13 @@
 package is.project2.console.state;
 
 import is.project2.console.MusicApp;
-import is.project2.ejb.MusicAppException;
-import is.project2.jpa.entities.Account;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
- * @author Flávio
+ * @author Flávio J. Saraiva
  */
 public class MainState extends AbstractState {
 
@@ -24,31 +22,36 @@ public class MainState extends AbstractState {
 
     @Override
     public AbstractState process() {
-        assert(app.user != null);
+        assert (app.userId != null);
         try {
             final String cmd = app.read("> ");
             switch (cmd) {
+                case "account": {
+                    return new AccountState(app);
+                }
                 case "playlists": {
                     return new PlaylistsState(app);
                 }
-                case "music": {
+                case "files": {
                     return new MusicFilesState(app);
                 }
                 case "logout": {
-                    return new InitialState(app);
+                    return new GuestState(app);
                 }
                 default: {
                     app.writer.println("Main commands:");
-                    app.writer.println(" playlist - manage playlists");
-                    app.writer.println(" files - manage files");
+                    app.writer.println(" account - manage account");
+                    app.writer.println(" playlists - manage playlists");
+                    app.writer.println(" files - manage music files");
                     app.writer.println(" logout - logout application");
                 }
             }
         } catch (IOException ex) {
+            app.writer.println(ex);
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             return null; // exit
         }
-        return this; // same state
+        return this; // keep state
     }
-    
+
 }

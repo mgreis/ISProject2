@@ -23,7 +23,7 @@ public class MusicFilesState extends AbstractState {
 
     @Override
     public AbstractState process() {
-        assert(app.user != null);
+        assert(app.userId != null);
         try {
             final String cmd = app.read("music> ");
             switch (cmd) {
@@ -31,7 +31,7 @@ public class MusicFilesState extends AbstractState {
                     return new MainState(app);
                 }
                 case "logout": {
-                    return new InitialState(app);
+                    return new GuestState(app);
                 }
                 default: {
                     app.writer.println("Music commands:");
