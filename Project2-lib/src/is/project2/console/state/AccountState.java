@@ -6,14 +6,11 @@
 package is.project2.console.state;
 
 import is.project2.console.MusicApp;
-import is.project2.ejb.AccountManagerBeanRemote;
 import is.project2.ejb.AccountData;
-import is.project2.ejb.Beans;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
@@ -23,11 +20,8 @@ import javax.naming.NamingException;
  */
 public class AccountState extends AbstractState {
 
-    final private AccountManagerBeanRemote accountManager;
-
     public AccountState(MusicApp app) throws NamingException {
         super(app);
-        accountManager = InitialContext.doLookup(Beans.ACCOUNT_MANAGER_BEAN);
     }
 
     @Override
@@ -37,24 +31,24 @@ public class AccountState extends AbstractState {
             final String cmd = app.read("> ");
             switch (cmd) {
                 case "view": {
-                    final AccountData data = accountManager.load(app.accountId);
+                    final AccountData data = app.accountManager.load(app.accountId);
                     app.writer.format(" email: %s\n", data.getEmail());
                     break;// @todo
                 }
                 case "change-email": {
                     final String email = app.read("email: ");
-                    final AccountData data = accountManager.load(app.accountId);
+                    final AccountData data = app.accountManager.load(app.accountId);
                     data.setEmail(email);
-                    accountManager.save(data);
+                    app.accountManager.save(data);
                     break;
                 }
                 case "change-password": {
                     final char[] password = app.readPassword("password: ");
                     final char[] repeatPassword = app.readPassword("repeat password: ");
                     if (Arrays.equals(password, repeatPassword)) {
-                        final AccountData data = accountManager.load(app.accountId);
+                        final AccountData data = app.accountManager.load(app.accountId);
                         data.setPassword(password);
-                        accountManager.save(data);
+                        app.accountManager.save(data);
                     }
                     break;
                 }

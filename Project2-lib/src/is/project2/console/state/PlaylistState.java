@@ -6,17 +6,13 @@
 package is.project2.console.state;
 
 import is.project2.console.MusicApp;
-import is.project2.ejb.Beans;
 import is.project2.ejb.MusicAppException;
 import is.project2.ejb.MusicData;
-import is.project2.ejb.MusicManagerBeanRemote;
 import is.project2.ejb.PlaylistData;
-import is.project2.ejb.PlaylistManagerBeanRemote;
 import is.project2.ejb.SearchCriteria;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
@@ -26,13 +22,8 @@ import javax.naming.NamingException;
  */
 public class PlaylistState extends AbstractState {
 
-    final private PlaylistManagerBeanRemote playlistManager;
-    final private MusicManagerBeanRemote musicManager;
-
     public PlaylistState(MusicApp app) throws NamingException {
         super(app);
-        playlistManager = InitialContext.doLookup(Beans.PLAYLIST_MANAGER_BEAN);
-        musicManager = InitialContext.doLookup(Beans.MUSIC_MANAGER_BEAN);
     }
 
     @Override
@@ -55,16 +46,16 @@ public class PlaylistState extends AbstractState {
                     return new PlaylistListState(app);
                 }
                 case "list-music": {
-                    listMusic(musicManager.loadAllMine(app.accountId));
+                    listMusic(app.musicManager.loadAllMine(app.accountId));
                     break;
                 }
                 case "list-other-music": {
-                    listMusic(musicManager.loadAllOther(app.accountId));
+                    listMusic(app.musicManager.loadAllOther(app.accountId));
                     break;
                 }
                 case "find-other-music": {
                     final String criteria = app.read("search: ");
-                    listMusic(musicManager.findOther(app.accountId, new SearchCriteria(criteria)));
+                    listMusic(app.musicManager.findOther(app.accountId, new SearchCriteria(criteria)));
                     break;
                 }
                 case "add-music": {
@@ -111,21 +102,21 @@ public class PlaylistState extends AbstractState {
     }
 
     private PlaylistData load() throws MusicAppException {
-        return playlistManager.load(app.accountId, app.playlistId);
+        return app.playlistManager.load(app.accountId, app.playlistId);
     }
 
     private void save(PlaylistData playlist) throws MusicAppException {
         assert (playlist != null);
-        playlistManager.save(app.accountId, playlist);
+        app.playlistManager.save(app.accountId, playlist);
     }
 
     private void delete() throws MusicAppException {
-        playlistManager.delete(app.accountId, app.playlistId);
+        app.playlistManager.delete(app.accountId, app.playlistId);
     }
 
     private void viewPlaylist() throws MusicAppException {
         final PlaylistData playlist = load();
-        final MusicData[] musicList = musicManager.load(playlist.getMusic().toArray(new Long[0]));
+        final MusicData[] musicList = app.musicManager.load(playlist.getMusic().toArray(new Long[0]));
         app.writer.format(" name: %s\n", playlist.getName());
         for (int index = 0; index < musicList.length; index++) {
             final MusicData music = musicList[index];

@@ -6,7 +6,6 @@
 package is.project2.console.state;
 
 import is.project2.console.MusicApp;
-import is.project2.ejb.PlaylistManagerBeanRemote;
 import is.project2.ejb.SortOrder;
 import java.io.IOException;
 import java.util.Map;
@@ -20,11 +19,8 @@ import java.util.logging.Logger;
  */
 public class PlaylistListState extends AbstractState {
 
-    final private PlaylistManagerBeanRemote playlistManager;
-
     public PlaylistListState(MusicApp app) {
         super(app);
-        playlistManager = null; // @todo
     }
 
     @Override
@@ -34,20 +30,20 @@ public class PlaylistListState extends AbstractState {
             final String cmd = app.read("playlists> ");
             switch (cmd) {
                 case "list-asc": {
-                    for (Map.Entry<Long, String> playlist : playlistManager.list(app.accountId, SortOrder.ASCENDING)) {
+                    for (Map.Entry<Long, String> playlist : app.playlistManager.list(app.accountId, SortOrder.ASCENDING)) {
                         app.writer.format(" %d - %s\n", playlist.getKey(), playlist.getValue());
                     }
                     break;
                 }
                 case "list-desc": {
-                    for (Map.Entry<Long, String> playlist : playlistManager.list(app.accountId, SortOrder.DESCENDING)) {
+                    for (Map.Entry<Long, String> playlist : app.playlistManager.list(app.accountId, SortOrder.DESCENDING)) {
                         app.writer.format(" %d - %s\n", playlist.getKey(), playlist.getValue());
                     }
                     break;
                 }
                 case "create": {
                     final String name = app.read("name: ");
-                    app.playlistId = playlistManager.create(app.accountId, name);
+                    app.playlistId = app.playlistManager.create(app.accountId, name);
                     return new PlaylistState(app);
                 }
                 case "open": {

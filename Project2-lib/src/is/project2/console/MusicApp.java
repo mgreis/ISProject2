@@ -7,6 +7,10 @@ package is.project2.console;
 
 import is.project2.console.state.AbstractState;
 import is.project2.console.state.GuestState;
+import is.project2.ejb.AccountManagerBeanRemote;
+import is.project2.ejb.Beans;
+import is.project2.ejb.MusicManagerBeanRemote;
+import is.project2.ejb.PlaylistManagerBeanRemote;
 import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
@@ -26,6 +30,9 @@ public class MusicApp implements Runnable {
     private final Console console;
     private final BufferedReader reader;
     public final PrintWriter writer;
+    public AccountManagerBeanRemote accountManager;
+    public PlaylistManagerBeanRemote playlistManager;
+    public MusicManagerBeanRemote musicManager;
     public Long accountId;
     public Long playlistId;
     public Long musicId;
@@ -45,6 +52,12 @@ public class MusicApp implements Runnable {
     public void run() {
         writer.println("MusicApp");
         try {
+            accountManager = Beans.lookupAccountManager();
+            playlistManager = Beans.lookupPlaylistManager();
+            musicManager = Beans.lookupMusicManager();
+            accountId = null;
+            playlistId = null;
+            musicId = null;
             AbstractState state = new GuestState(this);
             while (state != null) {
                 state = state.process();
@@ -52,6 +65,13 @@ public class MusicApp implements Runnable {
         } catch (Exception ex) {
             writer.println(ex);
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            accountManager = null;
+            playlistManager = null;
+            musicManager = null;
+            accountId = null;
+            playlistId = null;
+            musicId = null;
         }
     }
 

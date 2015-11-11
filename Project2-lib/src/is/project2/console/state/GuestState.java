@@ -9,11 +9,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import is.project2.console.MusicApp;
-import is.project2.ejb.AccountManagerBeanRemote;
-import is.project2.ejb.Beans;
 import is.project2.ejb.MusicAppException;
 import java.util.Arrays;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
@@ -23,11 +20,8 @@ import javax.naming.NamingException;
  */
 public class GuestState extends AbstractState {
 
-    public final AccountManagerBeanRemote accountManager;
-
     public GuestState(MusicApp app) throws NamingException {
         super(app);
-        accountManager = InitialContext.doLookup(Beans.ACCOUNT_MANAGER_BEAN);
     }
 
     @Override
@@ -39,7 +33,7 @@ public class GuestState extends AbstractState {
                 case "login": {
                     final String email = app.read("email: ");
                     final char[] pass = app.readPassword("password: ");
-                    app.accountId = accountManager.login(email, pass);
+                    app.accountId = app.accountManager.login(email, pass);
                     break;
                 }
                 case "register": {
@@ -47,7 +41,7 @@ public class GuestState extends AbstractState {
                     final char[] password = app.readPassword("password: ");
                     final char[] repeatPassword = app.readPassword("repeat password: ");
                     if (Arrays.equals(password, repeatPassword)) {
-                        app.accountId = accountManager.register(email, password);
+                        app.accountId = app.accountManager.register(email, password);
                     }
                     break;
                 }

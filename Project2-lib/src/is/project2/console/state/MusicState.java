@@ -6,19 +6,12 @@
 package is.project2.console.state;
 
 import is.project2.console.MusicApp;
-import is.project2.ejb.Beans;
 import is.project2.ejb.MusicData;
-import is.project2.ejb.MusicManagerBeanRemote;
-import is.project2.ejb.MusicUploadData;
-import is.project2.ejb.SearchCriteria;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
@@ -27,11 +20,8 @@ import javax.naming.NamingException;
  */
 public class MusicState extends AbstractState {
 
-    final MusicManagerBeanRemote musicManager;
-
     public MusicState(MusicApp app) throws NamingException {
         super(app);
-        musicManager = InitialContext.doLookup(Beans.MUSIC_MANAGER_BEAN);
     }
 
     @Override
@@ -39,7 +29,7 @@ public class MusicState extends AbstractState {
         assert (app.accountId != null);
         assert (app.musicId != null);
         try {
-            final MusicData music = musicManager.load(app.musicId);
+            final MusicData music = app.musicManager.load(app.musicId);
             final String cmd = app.read("music[" + String.valueOf(app.musicId) + "]> ");
             switch (cmd) {
                 case "view": {
@@ -56,7 +46,7 @@ public class MusicState extends AbstractState {
                     if (canChange(music)) {
                         final String title = app.read("title: ");
                         music.setTitle(title);
-                        musicManager.save(app.accountId, music);
+                        app.musicManager.save(app.accountId, music);
                     }
                     break;
                 }
@@ -64,7 +54,7 @@ public class MusicState extends AbstractState {
                     if (canChange(music)) {
                         final String artist = app.read("artist: ");
                         music.setArtist(artist);
-                        musicManager.save(app.accountId, music);
+                        app.musicManager.save(app.accountId, music);
                     }
                     break;
                 }
@@ -72,7 +62,7 @@ public class MusicState extends AbstractState {
                     if (canChange(music)) {
                         final String album = app.read("album: ");
                         music.setAlbum(album);
-                        musicManager.save(app.accountId, music);
+                        app.musicManager.save(app.accountId, music);
                     }
                     break;
                 }
@@ -80,14 +70,14 @@ public class MusicState extends AbstractState {
                     if (canChange(music)) {
                         final Date year = new SimpleDateFormat("y-M-d").parse(app.read("year(yyyy-mm-dd): "));
                         music.setReleaseYear(year);
-                        musicManager.save(app.accountId, music);
+                        app.musicManager.save(app.accountId, music);
                     }
                     break;
                 }
                 case "detach": {
                     if (canChange(music)) {
                         music.setAccountId(null);
-                        musicManager.save(app.accountId, music);
+                        app.musicManager.save(app.accountId, music);
                         return new MusicListState(app);
                     }
                     break;

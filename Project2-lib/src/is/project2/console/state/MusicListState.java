@@ -6,9 +6,7 @@
 package is.project2.console.state;
 
 import is.project2.console.MusicApp;
-import is.project2.ejb.Beans;
 import is.project2.ejb.MusicData;
-import is.project2.ejb.MusicManagerBeanRemote;
 import is.project2.ejb.MusicUploadData;
 import is.project2.ejb.SearchCriteria;
 import java.io.File;
@@ -18,7 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
@@ -28,11 +25,8 @@ import javax.naming.NamingException;
  */
 public class MusicListState extends AbstractState {
 
-    final MusicManagerBeanRemote musicManager;
-
     public MusicListState(MusicApp app) throws NamingException {
         super(app);
-        musicManager = InitialContext.doLookup(Beans.MUSIC_MANAGER_BEAN);
     }
 
     @Override
@@ -42,16 +36,16 @@ public class MusicListState extends AbstractState {
             final String cmd = app.read("music> ");
             switch (cmd) {
                 case "list": {
-                    listMusic(musicManager.loadAllMine(app.accountId));
+                    listMusic(app.musicManager.loadAllMine(app.accountId));
                     break;
                 }
                 case "list-other-music": {
-                    listMusic(musicManager.loadAllOther(app.accountId));
+                    listMusic(app.musicManager.loadAllOther(app.accountId));
                     break;
                 }
                 case "find-other-music": {
                     final String criteria = app.read("search: ");
-                    listMusic(musicManager.findOther(app.accountId, new SearchCriteria(criteria)));
+                    listMusic(app.musicManager.findOther(app.accountId, new SearchCriteria(criteria)));
                     break;
                 }
                 case "create": {
@@ -80,7 +74,7 @@ public class MusicListState extends AbstractState {
                     uploadData.setArtist(artist);
                     uploadData.setAlbum(album);
                     uploadData.setReleaseYear(year);
-                    app.musicId = musicManager.upload(uploadData);
+                    app.musicId = app.musicManager.upload(uploadData);
                     return new MusicState(app);
                 }
                 case "open": {
