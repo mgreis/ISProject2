@@ -5,7 +5,7 @@
  */
 package is.project2.ejb;
 
-import java.util.Collection;
+
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
