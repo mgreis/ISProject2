@@ -30,6 +30,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.persistence.criteria.Predicate;
 
 /**
  *
@@ -199,6 +200,12 @@ public class DatabaseBean implements AutoCloseable {
         return entityManager.find(MusicFile.class, id);
     }
 
+    /**
+     * get he musicFile and turn it into MusicData
+     *
+     * @param id
+     * @return
+     */
     public MusicData getMusicData(Long id) {
         return this.musicFileToMusicData(entityManager.find(MusicFile.class, id));
     }
@@ -212,29 +219,29 @@ public class DatabaseBean implements AutoCloseable {
     public Playlist getPlaylist(Long id) {
         return entityManager.find(Playlist.class, id);
     }
-    
-    public Map.Entry<Long, String> [] getPlaylistsFromUser(Long accountId, SortOrder sort){
+
+    public Map.Entry<Long, String>[] getPlaylistsFromUser(Long accountId, SortOrder sort) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Playlist> query = builder.createQuery(Playlist.class);
+        Account user = this.getUserAccount(accountId);
 
         // build query
-        //final Root <MusicFileEntity> musics = query.from(MusicFileEntity.class);
+        final Root<Playlist> playlist = query.from(Playlist.class);
+        query.where(builder.equal(playlist.get("owner"), user));
         //executes the query to get the musics primary key
         final List<Playlist> auxList = entityManager.createQuery(query).getResultList();
-        MapEntry [] output= new MapEntry [auxList.size()];
+        MapEntry[] output = new MapEntry[auxList.size()];
         int cont = 0;
         //put query result into an arraylist
         for (Playlist auxVar : auxList) {
-            if (auxVar.getOwner() != null && Objects.equals(accountId, auxVar.getOwner().getId())) {
-                output[cont] = new MapEntry(auxVar.getId(),auxVar.getName());
-                cont++;
-            }
+
+            output[cont] = new MapEntry(auxVar.getId(), auxVar.getName());
+            cont++;
+
         }
         //return the array
         return output;
     }
-    
-    
 
     /**
      * returns a playListData object with a certain pk
@@ -246,7 +253,7 @@ public class DatabaseBean implements AutoCloseable {
         Playlist aux = entityManager.find(Playlist.class, id);
         PlaylistData data = new PlaylistData(id);
         data.setName(aux.getName());
-        MusicData [] musics = this.getMusicsFromPlaylist(id);
+        MusicData[] musics = this.getMusicsFromPlaylist(id);
         for (MusicData music : musics) {
             data.getMusic().add(music.getId());
         }
@@ -279,23 +286,24 @@ public class DatabaseBean implements AutoCloseable {
      * @param id
      * @return
      */
-    public MusicData[] getMusicsFromUser(Long id) {
+    public MusicData[] getMusicsFromUser(Long accountId) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
-
+        Account user = this.getUserAccount(accountId);
         // build query
-        //final Root <MusicFileEntity> musics = query.from(MusicFileEntity.class);
+        final Root<MusicFile> musics = query.from(MusicFile.class);
+        query.where(builder.equal(musics.get("owner"), user));
         //executes the query to get the musics primary key
         final List<MusicFile> auxList = entityManager.createQuery(query).getResultList();
         final MusicData[] output = new MusicData[auxList.size()];
         int cont = 0;
         //put query result into an arraylist
         for (MusicFile auxVar : auxList) {
-            if (auxVar.getOwner() != null && Objects.equals(id, auxVar.getOwner().getId())) {
-                output[cont] = this.musicFileToMusicData(auxVar);
-                cont++;
-            }
+
+            output[cont] = this.musicFileToMusicData(auxVar);
+            cont++;
         }
+
         //return the array
         return output;
     }
@@ -306,17 +314,18 @@ public class DatabaseBean implements AutoCloseable {
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
 
         // build query
-        //final Root <MusicFileEntity> musics = query.from(MusicFileEntity.class);
+        final Root<MusicFile> musics = query.from(MusicFile.class);
+        query.where(builder.like(musics.get("artist"), artist));
         //executes the query to get the musics primary key
         final List<MusicFile> auxList = entityManager.createQuery(query).getResultList();
         final MusicData[] output = new MusicData[auxList.size()];
         int cont = 0;
         //put query result into an arraylist
         for (MusicFile auxVar : auxList) {
-            if (auxVar.getArtist().contains(artist)) {
-                output[cont] = this.musicFileToMusicData(auxVar);
-                cont++;
-            }
+
+            output[cont] = this.musicFileToMusicData(auxVar);
+            cont++;
+
         }
         //return the arrayList
         return output;
@@ -328,39 +337,46 @@ public class DatabaseBean implements AutoCloseable {
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
 
         // build query
-        //final Root <MusicFileEntity> musics = query.from(MusicFileEntity.class);
+        final Root <MusicFile> musics = query.from(MusicFile.class);
+        Predicate p1 = builder.like(musics.get("artist"), artist);
+        Predicate p2 = builder.like(musics.get("title"), title);
+        Predicate p3 = builder.and(p1,p2);
+        
+        query.where(p3);
+        
         //executes the query to get the musics primary key
         final List<MusicFile> auxList = entityManager.createQuery(query).getResultList();
         final MusicData[] output = new MusicData[auxList.size()];
         int cont = 0;
         //put query result into an arraylist
         for (MusicFile auxVar : auxList) {
-            if (auxVar.getArtist().contains(artist) && auxVar.getTitle().contains(title)) {
-                output[cont] = this.musicFileToMusicData(auxVar);
-                cont++;
-            }
+
+            output[cont] = this.musicFileToMusicData(auxVar);
+            cont++;
+
         }
         //return the arrayList
         return output;
     }
 
     public MusicData[] getMusicsByTitle(String title) {
-        final ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
+
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
 
         // build query
-        //final Root <MusicFileEntity> musics = query.from(MusicFileEntity.class);
+        final Root<MusicFile> musics = query.from(MusicFile.class);
+        query.where(builder.like(musics.get("title"), title));
         //executes the query to get the musics primary key
         final List<MusicFile> auxList = entityManager.createQuery(query).getResultList();
         final MusicData[] output = new MusicData[auxList.size()];
         int cont = 0;
         //put query result into an arraylist
         for (MusicFile auxVar : auxList) {
-            if (auxVar.getTitle().equalsIgnoreCase(title)) {
-                output[cont] = this.musicFileToMusicData(auxVar);
-                cont++;
-            }
+
+            output[cont] = this.musicFileToMusicData(auxVar);
+            cont++;
+
         }
         //return the arrayList
         return output;
@@ -373,7 +389,7 @@ public class DatabaseBean implements AutoCloseable {
      * @return
      */
     public MusicData[] getMusicsFromPlaylist(Long id) {
-        final ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
+        
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<PlaylistFile> query = builder.createQuery(PlaylistFile.class);
 
@@ -400,22 +416,24 @@ public class DatabaseBean implements AutoCloseable {
      * @param id
      * @return
      */
-    public MusicData[] getMusicsFromOtherUsers(Long id) {
+    public MusicData[] getMusicsFromOtherUsers(Long accountId) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
+        Account user = this.getUserAccount(accountId);
 
         // build query
-        //final Root <MusicFileEntity> musics = query.from(MusicFileEntity.class);
+        final Root <MusicFile> musics = query.from(MusicFile.class);
+        query.where(builder.notEqual(musics.get("owner"), user));
         //executes the query to get the musics primary key
         final List<MusicFile> auxList = entityManager.createQuery(query).getResultList();
         final MusicData[] output = new MusicData[auxList.size()];
         int cont = 0;
         //put query result into an arraylist
         for (MusicFile auxVar : auxList) {
-            if (auxVar.getOwner() != null && !Objects.equals(id, auxVar.getOwner().getId())) {
+            
                 output[cont] = this.musicFileToMusicData(auxVar);
                 cont++;
-            }
+            
         }
         //return the array
         return output;
@@ -432,7 +450,12 @@ public class DatabaseBean implements AutoCloseable {
         AccountData user = null;
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Account> query = builder.createQuery(Account.class);
-
+        final Root <Account> account = query.from(Account.class);
+        Predicate p1 = builder.like(account.get("email"), email);
+        Predicate p2 = builder.like(account.get("password"), password);
+        Predicate p3 = builder.and(p1,p2);
+        
+        query.where(p3);
         final List<Account> auxList = entityManager.createQuery(query).getResultList();
         for (Account auxVar : auxList) {
             if (auxVar.getEmail().matches(email) && auxVar.getPassword().matches(password)) {
@@ -455,15 +478,17 @@ public class DatabaseBean implements AutoCloseable {
         AccountData user = null;
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Account> query = builder.createQuery(Account.class);
+        final Root <Account> account = query.from(Account.class);
+        query.where(builder.equal(account.get("id"), id));
 
         final List<Account> auxList = entityManager.createQuery(query).getResultList();
         for (Account auxVar : auxList) {
-            if (auxVar.getId().equals(id)) {
+            
                 user = new AccountData(auxVar.getId());
                 user.setEmail(auxVar.getEmail());
                 user.setPassword(auxVar.getPassword().toCharArray());
 
-            }
+            
         }
         return user;
     }
@@ -472,13 +497,15 @@ public class DatabaseBean implements AutoCloseable {
 
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Account> query = builder.createQuery(Account.class);
+        final Root <Account> account = query.from(Account.class);
+        query.where(builder.equal(account.get("id"), id));
 
         final List<Account> auxList = entityManager.createQuery(query).getResultList();
         for (Account auxVar : auxList) {
-            if (auxVar.getId().equals(id)) {
+            
                 return auxVar;
 
-            }
+            
         }
         return null;
     }
