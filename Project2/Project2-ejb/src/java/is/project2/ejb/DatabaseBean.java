@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package is.project2.jpa.api;
+package is.project2.ejb;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,17 +18,25 @@ import is.project2.jpa.entities.MusicFile;
 import is.project2.jpa.entities.Playlist;
 import is.project2.jpa.entities.PlaylistFile;
 import is.project2.jpa.entities.Account;
+import javax.annotation.PostConstruct;
+import javax.ejb.LocalBean;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 
 /**
  *
  * @author Mário
  */
-public class Database implements AutoCloseable {
+@Singleton
+@Startup
+@LocalBean
+public class DatabaseBean implements AutoCloseable {
 
-    private final EntityManager entityManager;
-    private final EntityManagerFactory entityManagerFactory;
+    private EntityManager entityManager;
+    private EntityManagerFactory entityManagerFactory;
 
-    public Database() {
+    @PostConstruct
+    void init() {
         entityManagerFactory = Persistence.createEntityManagerFactory("JPAPROJECT2PU");
         entityManager = entityManagerFactory.createEntityManager();
     }
@@ -79,9 +87,10 @@ public class Database implements AutoCloseable {
      *
      * @param email
      * @param password
+     * @return 
      */
     public Long createUser(String email, String password) {
-        Account account = new Account(email,password);
+        Account account = new Account(email, password);
         insertObject(account);
         return account.getId();
     }
@@ -326,17 +335,48 @@ public class Database implements AutoCloseable {
         //return the arrayList
         return musicList;
     }
-    
-    public Long getUser(String email, String password){
-        Long userId=null;
+    /**
+     * Get the account data by its email and password
+     * @param email
+     * @param password
+     * @return 
+     */
+    public AccountData getUser(String email, String password){
+        AccountData user = null;
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Account> query = builder.createQuery(Account.class);
         
         final List <Account> auxList = entityManager.createQuery(query).getResultList();
         for(Account auxVar : auxList) {
-            if(auxVar.getEmail().matches(email)&&auxVar.getPassword().matches(password))userId=auxVar.getId();
+            if(auxVar.getEmail().matches(email)&&auxVar.getPassword().matches(password)){
+                user= new AccountData(auxVar.getId());
+                user.setEmail(auxVar.getEmail());
+                user.setPassword(auxVar.getPassword().toCharArray());
+                
+            }
         }
-        return userId;
+        return user;
+    }
+    /**
+     * Get the account data by its userId
+     * @param id
+     * @return 
+     */
+    public AccountData getUser(Long id){
+        AccountData user = null;
+        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<Account> query = builder.createQuery(Account.class);
+        
+        final List <Account> auxList = entityManager.createQuery(query).getResultList();
+        for(Account auxVar : auxList) {
+            if(auxVar.getId().equals(id)){
+                user= new AccountData(auxVar.getId());
+                user.setEmail(auxVar.getEmail());
+                user.setPassword(auxVar.getPassword().toCharArray());
+                
+            }
+        }
+        return user;
     }
 
     /**
