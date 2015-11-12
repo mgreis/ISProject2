@@ -25,7 +25,7 @@ import javax.ejb.Startup;
 
 /**
  *
- * @author Mário
+ * @author mgreis
  */
 @Singleton
 @Startup
@@ -67,8 +67,9 @@ public class DatabaseBean implements AutoCloseable {
      * @param name
      * @param owner
      */
-    public void createPlaylist(String name, Account owner) {
-        insertObject(new Playlist(name, owner));
+    public void createPlaylist(String name, AccountData owner) {
+        
+        insertObject(new Playlist(name, this.getAccount(owner.getId())));
     }
 
     /**
@@ -114,12 +115,27 @@ public class DatabaseBean implements AutoCloseable {
     }
 
     /**
-     * deletes a playlist object with a certain primary key
+     * deletes a playlist object with a certain primary key and all its PlaylistFile dependencies
      *
      * @param id
      */
     public void deletePlaylist(Long id) {
+        
+        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<PlaylistFile> query = builder.createQuery(PlaylistFile.class);
+        // build query
+        final Root<PlaylistFile> musics = query.from(PlaylistFile.class);
+        query.where(builder.equal(musics.get("playlist_id"), id)).orderBy(builder.asc(musics.get("id")));
+
+        //executes the query to get the musics primary key
+        final List<PlaylistFile> auxList = entityManager.createQuery(query).getResultList();
+
+        //start deleting from the PlayListfile table
         entityManager.getTransaction().begin();
+        for (PlaylistFile auxVar : auxList) {
+            entityManager.remove(auxVar);
+
+        }
         entityManager.remove(entityManager.find(Playlist.class, id));
         entityManager.getTransaction().commit();
     }
@@ -379,6 +395,23 @@ public class DatabaseBean implements AutoCloseable {
         return user;
     }
 
+     public Account getAccount (Long id){
+        
+        final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<Account> query = builder.createQuery(Account.class);
+        
+        final List <Account> auxList = entityManager.createQuery(query).getResultList();
+        for(Account auxVar : auxList) {
+            if(auxVar.getId().equals(id)){
+               return auxVar;
+                
+            }
+        }
+        return null;
+    }
+    
+    
+    
     /**
      * Inserts a music list into a playlist
      *

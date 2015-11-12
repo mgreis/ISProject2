@@ -16,6 +16,7 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface PlaylistManagerBeanRemote {
+    
 
     /**
      * List playlists.

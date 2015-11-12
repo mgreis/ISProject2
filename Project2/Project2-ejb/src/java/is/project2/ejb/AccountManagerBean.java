@@ -5,6 +5,7 @@
  */
 package is.project2.ejb;
 
+import java.util.Arrays;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -57,15 +58,23 @@ public class AccountManagerBean implements AccountManagerBeanRemote {
         if (aux!=null)return aux;
         else throw new MusicAppException("Invalid UserId");
     }
-
+    /**
+     * Update account information
+     * @param account
+     * @throws MusicAppException 
+     */
     @Override
     public void save(AccountData account) throws MusicAppException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        database.updateUser(account.getId(), account.getEmail(), Arrays.toString(account.getPassword()));
     }
-
+    /**
+     * deletes account
+     * @param id
+     * @throws MusicAppException 
+     */
     @Override
     public void delete(Long id) throws MusicAppException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        database.deleteUser(id);
     }
 
 }
