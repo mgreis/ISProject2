@@ -5,7 +5,6 @@
  */
 package is.project2.ejb;
 
-import is.project2.jpa.entities.Account;
 import java.util.Collection;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -13,7 +12,7 @@ import javax.ejb.Stateless;
 
 /**
  *
- * @author Flávio
+ * @author Flávio,mgreis
  */
 @Stateless
 public class PlaylistManagerBean implements PlaylistManagerBeanRemote {
@@ -22,38 +21,66 @@ public class PlaylistManagerBean implements PlaylistManagerBeanRemote {
     DatabaseBean database;
 
     @Override
-    public Collection<Map.Entry<Long, String>> list(Long accountId, SortOrder sort) throws MusicAppException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Map.Entry<Long, String> [] list(Long accountId, SortOrder sort) throws MusicAppException {
+        if(database.getAccount(accountId)!=null){
+            return database.getPlaylistsFromUser(accountId, sort);
+            
+        }
+        else throw new MusicAppException("Invalid session");
     }
 
     @Override
     public Long create(Long accountId, String name) throws MusicAppException {
         //get the account object with the accountId 
-        AccountData user=database.getUser(accountId);
-        Long id=null;
-        if(user!=null){
+        AccountData user = database.getUser(accountId);
+        Long id;
+        
+        //if user exists;
+        if (user != null) {
+
+            id = database.createPlaylist(name, user);
             
-            id= database.createPlaylist(name, user);
-            if (id!=null) return id;
-            else throw new MusicAppException("Error creating playlist.");
+            //if playlist was successfully created
+            if (id != null) {
+                return id;
+                
+            } else {
+                throw new MusicAppException("Error creating playlist.");
+            }
+        } else {
+            throw new MusicAppException("Invalid session.");
         }
-        else throw new MusicAppException("Invalid session.");
     }
 
     @Override
     public PlaylistData load(Long accountId, Long playlistId) throws MusicAppException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        AccountData user = database.getUser(accountId);
+
+        if (user != null) {
+
+           return database.getPlaylistData(playlistId);
+           
+        } else {
+            throw new MusicAppException("Invalid session.");
+        }
     }
 
     @Override
     public void save(Long accountId, PlaylistData playlist) throws MusicAppException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        database.updatePlaylist(accountId, playlist);
     }
-
+    
     @Override
     public void delete(Long accountId, Long playlistId) throws MusicAppException {
-       if(database.getUser(accountId)!=null)database.deletePlaylist(playlistId);
-       else throw new MusicAppException("Invalid session");
+        //if user exists in database
+        if (database.getUser(accountId) != null) {
+            
+            //delete the playlist and all its associated playlistFile entries
+            database.deletePlaylist(playlistId);
+            
+        } else {
+            throw new MusicAppException("Invalid session");
+        }
     }
 
 }

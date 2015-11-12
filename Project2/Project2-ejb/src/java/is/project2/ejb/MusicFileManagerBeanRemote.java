@@ -13,7 +13,7 @@ import javax.ejb.Remote;
  * @author Flávio J. Saraiva
  */
 @Remote
-public interface MusicManagerBeanRemote {
+public interface MusicFileManagerBeanRemote {
 
     /**
      * Upload a new music.

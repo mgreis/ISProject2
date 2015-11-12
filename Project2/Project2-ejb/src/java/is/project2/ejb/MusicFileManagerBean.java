@@ -5,48 +5,88 @@
  */
 package is.project2.ejb;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 /**
  *
- * @author Flávio
+ * @author Flávio, mgreis
  */
 @Stateless
-public class MusicFileManagerBean implements MusicManagerBeanRemote {
+public class MusicFileManagerBean implements MusicFileManagerBeanRemote {
+
+    @EJB
+    DatabaseBean database;
 
     @Override
     public Long upload(MusicUploadData music) throws MusicAppException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        return database.createMusicFile(database.getAccount(music.getAccountId()),
+                music.getTitle(), music.getArtist(), music.getAlbum(),
+                music.getReleaseYear(), music.getFilename(), music.getData());
     }
 
     @Override
     public MusicData load(Long id) throws MusicAppException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return database.getMusicData(id);
     }
 
     @Override
     public MusicData[] load(Long[] ids) throws MusicAppException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        MusicData[] musicList = new MusicData[ids.length];
+        for (int i = 0; i < ids.length; i++) {
+            musicList[i] = load(ids[i]);
+        }
+
+        return musicList;
     }
 
     @Override
     public MusicData[] loadAllMine(Long accountId) throws MusicAppException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (database.getUser(accountId) != null) {
+            return database.getMusicsFromUser(accountId);
+        }
+        throw new MusicAppException("Invalid session");
     }
 
     @Override
     public MusicData[] loadAllOther(Long accountId) throws MusicAppException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (database.getUser(accountId) != null) {
+            return database.getMusicsFromUser(accountId);
+        }
+        throw new MusicAppException("Invalid session");
     }
 
     @Override
     public MusicData[] findOther(Long accountId, SearchCriteria criteria) throws MusicAppException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (database.getUser(accountId) != null) {
+
+            if (criteria.getCriteria().equalsIgnoreCase("artist")) {
+                return database.getMusicsByArtist(criteria.getArgument());
+            }
+            if (criteria.getCriteria().equalsIgnoreCase("title")) {
+                return database.getMusicsByTitle(criteria.getArgument());
+            }
+            if (criteria.getCriteria().equalsIgnoreCase("artist&title")) {
+                return database.getMusicsByArtistAndTitle(criteria.getArgument(), criteria.getArgument2());
+            }
+
+        }
+        throw new MusicAppException("Invalid session");
     }
 
     @Override
     public void save(Long accountId, MusicData music) throws MusicAppException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (database.getUser(accountId) != null) {
+            database.updateMusicFile(music.getId(), music.getAlbum(), music.getArtist(),
+                    music.getUri().getPath(), music.getReleaseYear(), music.getTitle());
+        }
+        throw new MusicAppException("Invalid session");
     }
 
     // Add business logic below. (Right-click in editor and choose

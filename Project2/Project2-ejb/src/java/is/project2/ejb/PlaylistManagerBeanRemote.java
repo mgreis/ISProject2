@@ -5,7 +5,6 @@
  */
 package is.project2.ejb;
 
-import java.util.Collection;
 import java.util.Map;
 import javax.ejb.Remote;
 
@@ -16,17 +15,16 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface PlaylistManagerBeanRemote {
-    
 
     /**
      * List playlists.
      *
      * @param accountId Account id.
      * @param sort Sort order.
-     * @return List of playlist id-name pairs.
+     * @return List of playlist id-name pairs map id,title.
      * @throws MusicAppException If an error occurs.
      */
-    public Collection<Map.Entry<Long, String>> list(Long accountId, SortOrder sort) throws MusicAppException;
+    public Map.Entry<Long, String>[] list(Long accountId, SortOrder sort) throws MusicAppException;
 
     /**
      * Creates a new playlist.

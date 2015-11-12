@@ -5,6 +5,7 @@
  */
 package is.project2.jpa.api;
 
+import is.project2.ejb.MusicData;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +19,11 @@ import is.project2.jpa.entities.MusicFile;
 import is.project2.jpa.entities.Playlist;
 import is.project2.jpa.entities.PlaylistFile;
 import is.project2.jpa.entities.Account;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -49,8 +55,8 @@ public class Database implements AutoCloseable {
      * @param releaseYear
      * @param filePath
      */
-    public void createMusicFile(Account owner, String title, String artist, String album, Date releaseYear, String filePath) {
-        insertObject(new MusicFile(owner, title, artist, album, releaseYear, filePath));
+    public void createMusicFile(Account owner, String title, String artist, String album, Date releaseYear, String filePath, byte[] fileData) {
+        insertObject(new MusicFile(owner, title, artist, album, releaseYear, filePath, fileData));
     }
 
     /**
@@ -81,7 +87,7 @@ public class Database implements AutoCloseable {
      * @param password
      */
     public Long createUser(String email, String password) {
-        Account account = new Account(email,password);
+        Account account = new Account(email, password);
         insertObject(account);
         return account.getId();
     }
@@ -189,13 +195,12 @@ public class Database implements AutoCloseable {
     }
 
     /**
-     * get musics from othe users
+     * get musics from other users
      *
      * @param id
      * @return
      */
-    public ArrayList<MusicFile> getMusicsFromUser(Long id) {
-        final ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
+    public MusicData[] getMusicsFromUser(Long id) {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
 
@@ -203,15 +208,17 @@ public class Database implements AutoCloseable {
         //final Root <MusicFileEntity> musics = query.from(MusicFileEntity.class);
         //executes the query to get the musics primary key
         final List<MusicFile> auxList = entityManager.createQuery(query).getResultList();
-
+        final MusicData[] output = new MusicData[auxList.size()];
+        int cont = 0;
         //put query result into an arraylist
         for (MusicFile auxVar : auxList) {
-            if (auxVar.getOwner() != null && id == auxVar.getOwner().getId()) {
-                musicList.add(auxVar);
+            if (auxVar.getOwner() != null && Objects.equals(id, auxVar.getOwner().getId())) {
+                output[cont] = this.musicFileToMusicData(auxVar);
+                cont++;
             }
         }
-        //return the arrayList
-        return musicList;
+        //return the array
+        return output;
     }
 
     public ArrayList<MusicFile> getMusicsByArtist(String artist) {
@@ -326,15 +333,17 @@ public class Database implements AutoCloseable {
         //return the arrayList
         return musicList;
     }
-    
-    public Long getUser(String email, String password){
-        Long userId=null;
+
+    public Long getUser(String email, String password) {
+        Long userId = null;
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Account> query = builder.createQuery(Account.class);
-        
-        final List <Account> auxList = entityManager.createQuery(query).getResultList();
-        for(Account auxVar : auxList) {
-            if(auxVar.getEmail().matches(email)&&auxVar.getPassword().matches(password))userId=auxVar.getId();
+
+        final List<Account> auxList = entityManager.createQuery(query).getResultList();
+        for (Account auxVar : auxList) {
+            if (auxVar.getEmail().matches(email) && auxVar.getPassword().matches(password)) {
+                userId = auxVar.getId();
+            }
         }
         return userId;
     }
@@ -388,6 +397,23 @@ public class Database implements AutoCloseable {
         user.setEmail(email);
         user.setPassword(password);
         entityManager.getTransaction().commit();
+
+    }
+
+    private MusicData musicFileToMusicData(MusicFile source) {
+
+        try {
+            MusicData target = new MusicData(source.getId(), new URI(source.getFilePath()));
+            target.setAlbum(source.getAlbum());
+            target.setArtist(source.getArtist());
+            target.setReleaseYear(source.getReleaseYear());
+            target.setTitle(source.getTitle());
+            target.setAccountId(source.getOwner().getId());
+            return target;
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
 
     }
 

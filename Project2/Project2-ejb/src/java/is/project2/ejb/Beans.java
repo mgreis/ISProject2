@@ -8,7 +8,7 @@ package is.project2.ejb;
 import is.project2.ejb.AccountManagerBean;
 import is.project2.ejb.AccountManagerBeanRemote;
 import is.project2.ejb.MusicFileManagerBean;
-import is.project2.ejb.MusicManagerBeanRemote;
+import is.project2.ejb.MusicFileManagerBeanRemote;
 import is.project2.ejb.PlaylistManagerBean;
 import is.project2.ejb.PlaylistManagerBeanRemote;
 import java.util.Hashtable;
@@ -91,8 +91,8 @@ public class Beans {
      * @return Music manager proxy.
      * @throws NamingException If a naming exception occurred.
      */
-    public static MusicManagerBeanRemote lookupMusicManager() throws NamingException {
-        return lookup(MusicFileManagerBean.class, MusicManagerBeanRemote.class);
+    public static MusicFileManagerBeanRemote lookupMusicManager() throws NamingException {
+        return lookup(MusicFileManagerBean.class, MusicFileManagerBeanRemote.class);
     }
 
 }

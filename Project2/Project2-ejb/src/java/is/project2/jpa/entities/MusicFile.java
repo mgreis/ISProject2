@@ -40,6 +40,8 @@ public class MusicFile implements Serializable {
     private String artist;
 
     private String album;
+    
+    private byte[] fileData;
 
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date releaseYear;
@@ -50,13 +52,14 @@ public class MusicFile implements Serializable {
     public MusicFile() {
     }
 
-    public MusicFile(Account owner, String title, String artist, String album, Date releaseYear, String filePath) {
+    public MusicFile(Account owner, String title, String artist, String album, Date releaseYear, String filePath, byte[] fileData) {
         this.owner = owner;
         this.title = title;
         this.artist = artist;
         this.album = album;
         this.releaseYear = releaseYear;
         this.filePath = filePath;
+        this.fileData = fileData;
     }
 
     public Long getId() {
@@ -191,6 +194,20 @@ public class MusicFile implements Serializable {
         buf.append(filePath);
         buf.append(" ]");
         return buf.toString();
+    }
+
+    /**
+     * @return the fileData
+     */
+    public byte[] getFileData() {
+        return fileData;
+    }
+
+    /**
+     * @param fileData the fileData to set
+     */
+    public void setFileData(byte[] fileData) {
+        this.fileData = fileData;
     }
 
 }
