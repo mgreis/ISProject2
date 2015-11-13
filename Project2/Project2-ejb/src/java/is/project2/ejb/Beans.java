@@ -56,12 +56,15 @@ public class Beans {
         assert (viewClass != null);
         final Hashtable jndiProperties = new Hashtable();
         jndiProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
+        jndiProperties.put("jboss.naming.client.ejb.context",true);
+        
         final Context context = new InitialContext(jndiProperties);
         final String appName = APP_NAME;
         final String moduleName = MODULE_NAME;
         final String distinctName = DISTINCT_NAME;
         final String beanName = beanClass.getSimpleName();
         final String viewClassName = viewClass.getName();
+        System.out.println("ejb:" + appName + "/" + moduleName + "/" + distinctName + "/" + beanName + "!" + viewClassName);
         return (T) context.lookup("ejb:" + appName + "/" + moduleName + "/" + distinctName + "/" + beanName + "!" + viewClassName);
     }
 
