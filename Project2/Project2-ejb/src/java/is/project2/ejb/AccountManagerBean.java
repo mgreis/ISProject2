@@ -11,7 +11,7 @@ import javax.ejb.Stateless;
 
 /**
  *
- * @author Flávio
+ * @author Flávio, mgreis
  */
 @Stateless
 public class AccountManagerBean implements AccountManagerBeanRemote {
@@ -29,6 +29,7 @@ public class AccountManagerBean implements AccountManagerBeanRemote {
      */
     @Override
     public Long register(String email, char[] password) throws MusicAppException {
+        System.out.println("test1");
         return database.createUser(email, String.copyValueOf(password));
     }
     

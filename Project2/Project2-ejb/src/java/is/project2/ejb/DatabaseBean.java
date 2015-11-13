@@ -30,6 +30,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Predicate;
 
 /**
@@ -40,20 +41,21 @@ import javax.persistence.criteria.Predicate;
 
 @Singleton
 @LocalBean
-public class DatabaseBean implements AutoCloseable {
+public class DatabaseBean{
 
    
-    private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("JPAPROJECT2PU");
-    private EntityManager entityManager = entityManagerFactory.createEntityManager();
-    
+    //private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("JPAPROJECT2PU");
+    //private EntityManager entityManager = entityManagerFactory.createEntityManager();
+    @PersistenceContext(name="JPAPROJECT2PU")
+    EntityManager entityManager; 
     
 
 
-    @Override
-    public void close() {
-        entityManager.close();
-        entityManagerFactory.close();
-    }
+    //@Override
+    //public void close() {
+        //entityManager.close();
+        //entityManagerFactory.close();
+    //}
 
     /**
      * creates a musicFile row in the database
@@ -148,13 +150,13 @@ public class DatabaseBean implements AutoCloseable {
         final List<PlaylistFile> auxList = entityManager.createQuery(query).getResultList();
 
         //start deleting from the PlayListfile table
-        entityManager.getTransaction().begin();
+        //entityManager.getTransaction().begin();
         for (PlaylistFile auxVar : auxList) {
             entityManager.remove(auxVar);
 
         }
         entityManager.remove(entityManager.find(Playlist.class, id));
-        entityManager.getTransaction().commit();
+        //entityManager.getTransaction().commit();
     }
 
     /**
@@ -163,9 +165,9 @@ public class DatabaseBean implements AutoCloseable {
      * @param id
      */
     public void deletePlaylistFile(Long id) {
-        entityManager.getTransaction().begin();
+        //entityManager.getTransaction().begin();
         entityManager.remove(entityManager.find(PlaylistFile.class, id));
-        entityManager.getTransaction().commit();
+        //entityManager.getTransaction().commit();
     }
 
     /**
@@ -174,9 +176,9 @@ public class DatabaseBean implements AutoCloseable {
      * @param id
      */
     public void deleteUser(Long id) {
-        entityManager.getTransaction().begin();
+        //entityManager.getTransaction().begin();
         entityManager.remove(entityManager.find(Account.class, id));
-        entityManager.getTransaction().commit();
+        //entityManager.getTransaction().commit();
     }
 
     /**
@@ -185,9 +187,9 @@ public class DatabaseBean implements AutoCloseable {
      * @param object
      */
     private void insertObject(Object object) {
-        entityManager.getTransaction().begin();
+        //entityManager.getTransaction().begin();
         entityManager.persist(object);
-        entityManager.getTransaction().commit();
+        //entityManager.getTransaction().commit();
     }
 
     /**

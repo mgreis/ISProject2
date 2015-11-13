@@ -56,8 +56,6 @@ public class Beans {
         assert (viewClass != null);
         final Hashtable jndiProperties = new Hashtable();
         jndiProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
-        jndiProperties.put("jboss.naming.client.ejb.context",true);
-        
         final Context context = new InitialContext(jndiProperties);
         final String appName = APP_NAME;
         final String moduleName = MODULE_NAME;
