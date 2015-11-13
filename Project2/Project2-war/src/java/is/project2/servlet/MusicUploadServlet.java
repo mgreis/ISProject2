@@ -43,7 +43,7 @@ public class MusicUploadServlet extends AbstractMusicAppServlet {
             upload.setTitle(map.getParameter("title"));
             upload.setArtist(map.getParameter("artist"));
             upload.setAlbum(map.getParameter("album"));
-            upload.setReleaseYear(new SimpleDateFormat("yyyy-mm-dd").parse(map.getParameter("releaseYear")));
+            upload.setReleaseYear(Integer.parseInt(map.getParameter("releaseYear")));
             // @todo ejb
             final Long id = NEXT_MUSIC_ID++;
             final URI uri = new URI("http://localhost:8080/Project2-war/music/stream/"

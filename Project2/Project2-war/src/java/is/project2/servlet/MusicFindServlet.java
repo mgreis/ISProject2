@@ -47,7 +47,7 @@ public class MusicFindServlet extends AbstractMusicAppServlet {
                         || (music.getTitle() != null && music.getTitle().toLowerCase().contains(query.toLowerCase()))
                         || (music.getArtist() != null && music.getArtist().toLowerCase().contains(query.toLowerCase()))
                         || (music.getAlbum() != null && music.getAlbum().toLowerCase().contains(query.toLowerCase()))
-                        || (music.getReleaseYear() != null && new SimpleDateFormat("yyyy-mm-dd").format(music.getReleaseYear()).contains(query))) {
+                        || (Integer.toString(music.getReleaseYear()).contains(query))) {
                     data.music.add(music); // found match
                 }
             }

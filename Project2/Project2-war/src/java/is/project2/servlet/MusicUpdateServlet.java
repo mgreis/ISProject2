@@ -43,7 +43,7 @@ public class MusicUpdateServlet extends AbstractMusicAppServlet {
                     music.setTitle(request.getParameter("title"));
                     music.setArtist(request.getParameter("artist"));
                     music.setAlbum(request.getParameter("album"));
-                    music.setReleaseYear(new SimpleDateFormat("yyyy-mm-dd").parse(request.getParameter("releaseYear")));
+                    music.setReleaseYear(Integer.parseInt(request.getParameter("releaseYear")));
                     return null;
                 }
             }

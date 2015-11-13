@@ -48,7 +48,7 @@ public abstract class AbstractMusicAppServlet extends HttpServlet {
                 music1.setTitle("music 1");
                 music1.setArtist("artist for music 1");
                 music1.setAlbum("album for music 1");
-                music1.setReleaseYear(new Date());
+                music1.setReleaseYear(1991);
                 music1.setAccountId((long) 1);
                 MUSIC.add(music1);
             }
@@ -57,7 +57,7 @@ public abstract class AbstractMusicAppServlet extends HttpServlet {
                 music2.setTitle("music 2");
                 music2.setArtist("artist for music 2");
                 music2.setAlbum("album for music 2");
-                music2.setReleaseYear(new Date());
+                music2.setReleaseYear(1992);
                 music2.setAccountId((long) 123);
                 MUSIC.add(music2);
             }
@@ -66,7 +66,7 @@ public abstract class AbstractMusicAppServlet extends HttpServlet {
                 music3.setTitle("music 3");
                 music3.setArtist("artist for music 3");
                 music3.setAlbum("album for music 3");
-                music3.setReleaseYear(new Date());
+                music3.setReleaseYear(1993);
                 music3.setAccountId(null);
                 MUSIC.add(music3);
             }
@@ -75,7 +75,7 @@ public abstract class AbstractMusicAppServlet extends HttpServlet {
                 music10.setTitle("music 10");
                 music10.setArtist("artist for music 10");
                 music10.setAlbum("album for music 10");
-                music10.setReleaseYear(new Date());
+                music10.setReleaseYear(2000);
                 music10.setAccountId((long) 1);
                 MUSIC.add(music10);
             }
@@ -84,7 +84,7 @@ public abstract class AbstractMusicAppServlet extends HttpServlet {
                 music99.setTitle("teste");
                 music99.setArtist("anonymous");
                 music99.setAlbum("album for music 3");
-                music99.setReleaseYear(new Date());
+                music99.setReleaseYear(2003);
                 music99.setAccountId(null);
                 MUSIC.add(music99);
             }
@@ -207,7 +207,7 @@ public abstract class AbstractMusicAppServlet extends HttpServlet {
                     .add("title", musicData.getTitle())
                     .add("artist", musicData.getArtist())
                     .add("album", musicData.getArtist())
-                    .add("releaseYear", musicData.getReleaseYear() == null ? null : new SimpleDateFormat("yyyy-mm-dd").format(musicData.getReleaseYear()))
+                    .add("releaseYear", musicData.getReleaseYear())
                     .add("url", String.valueOf(musicData.getUri()))
                     .add("canEdit", accountId.equals(musicData.getAccountId()))
             );
