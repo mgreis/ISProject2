@@ -1,0 +1,11 @@
+/* 
+ Author : Flávio J. Saraiva
+*/
+
+input.ng-invalid {
+    background-color: #ffe5e5;//#FA787E;
+}
+
+input.ng-valid {
+    background-color: #e5ffe5;//#78FA89;
+}

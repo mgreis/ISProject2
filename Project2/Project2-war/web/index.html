@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:ng="http://angularjs.org" ng-app="MusicApp" ng-strict-di>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Flávio J. Saraiva">
+        <title>MusicApp</title>
+
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+        <link href="css/loading-bar.min.css" rel="stylesheet">
+        <link href="css/MusicApp.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="container" ng-controller="ViewsController as views" ng-init="views.setup()">
+
+            <!-- Static navbar -->
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#">MusicApp</a>
+                    </div>
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li ng-class="views.navbarClasses('login')"><a href="#" ng-click="views.switchTo('login')"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                            <li ng-class="views.navbarClasses('register')"><a href="#" ng-click="views.switchTo('register')"><span class="glyphicon glyphicon-log-in"></span> Register</a></li>
+                            <li ng-class="views.navbarClasses('logout')"><a href="#" ng-click="logout()"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                            <li ng-class="views.navbarClasses('playlists')"><a href="#" ng-click="views.switchTo('playlists')"><span class="glyphicon glyphicon-list-alt"></span> Playlists</a></li>
+                            <li ng-class="views.navbarClasses('catalog')"><a href="#" ng-click="views.switchTo('catalog')"><span class="glyphicon glyphicon-music"></span> Catalog</a></li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div><!--/.container-fluid -->
+            </nav>
+
+            <!-- Errors -->
+            <div id="errors" ng-controller="ErrorsController as errors">
+                {{errors}}
+                <div class="alert alert-danger" role="alert" ng-repeat="error in errors.list()">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    {{error}}
+                </div>
+            </div>
+
+            <!-- Login -->
+            <div class="jumbotron" ng-show="views.isVisible('login')" ng-controller="LoginController as login">
+                {{login}}
+                <form novalidate ng-submit="login.submit()">
+                    <h2>Please sign in</h2>
+                    <label for="inputEmail" class="sr-only">Email address</label>
+                    <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="" ng-model="login.email">
+                    <label for="inputPassword" class="sr-only">Password</label>
+                    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="" ng-model="login.password">
+                    <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+                </form>
+            </div>
+
+            <!-- Register -->
+            <div class="jumbotron" ng-show="views.isVisible('register')" ng-controller="RegisterController as register">
+                {{register}}
+                <form novalidate ng-submit="register.submit()">
+                    <h2>Register new account</h2>
+                    <label for="inputEmail" class="sr-only">Email address</label>
+                    <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="" ng-model="register.email">
+                    <label for="inputPassword" class="sr-only">Password</label>
+                    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="" ng-model="register.password">
+                    <label for="inputPasswordRepeat" class="sr-only">Repeat password</label>
+                    <input type="password" id="inputPasswordRepeat" class="form-control" placeholder="Repeat password" required="" ng-model="register.passwordRepeat">
+                    <button class="btn btn-primary btn-block" type="submit">Register</button>
+                </form>
+            </div>
+
+            <!-- Playlists -->
+            <div class="jumbotron" ng-show="views.isVisible('playlists')" ng-controller="PlaylistsController as playlists">
+                {{playlists}}<br/>
+                <h2>Playlists</h2>
+                <div class="btn-group" role="group" aria-label="Choose a playlist">
+                    <button class="btn" ng-repeat="playlist in playlists.list" ng-class="playlists.playlistBtnClass(playlist.id)" ng-click="playlists.loadPlaylist(playlist)"><span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> {{playlist.name}}</button>
+                    <button class="btn" ng-class="playlists.playlistBtnClass(playlist)" ng-click="playlists.newPlaylist()"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> New playlist</button>
+                </div>
+
+                <div ng-show="playlists.playlist || playlists.isEditing">
+                    <!-- Playlist -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <!-- Name -->
+                            <span ng-hide="playlists.isEditing"><span class="glyphicon glyphicon-equalizer"></span> {{playlists.playlist.name}}</span>
+                            <input id="playlistName" ng-show="playlists.isEditing" type="text" class="form-control" placeholder="Playlist name" required="" ng-model="playlists.playlist.name">
+                            {{playlists.playlist}}
+                        </div>
+                        <div class="panel-body">
+                            <!-- Audio player -->
+                            <audio id="audio" preload="auto" tabindex="0" controls="" >
+                                <source ng-src="{playlists.getMusicSrc()}">
+                                <div class="alert alert-warning" role="alert">
+                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                    <span class="sr-only">Error:</span>
+                                    Your browser does not support the audio element.
+                                </div>
+                            </audio>
+                            TODO play music {{playlist.playing + 1}}
+                        </div>
+                        <!-- Music in playlist -->
+                        <table class="table table-hover table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Title</th>
+                                    <th>Artist</th>
+                                    <th>Album</th>
+                                    <th>Year</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="music in playlists.music track by $index" ng-class="playlists.musicRowClass($index)" ng-click="playlists.playMusic($index)">
+                                    <th scope="row">{{$index + 1}}</th>
+                                    <td>{{music.title}}</td>
+                                    <td>{{music.artist}}</td>
+                                    <td>{{music.album}}</td>
+                                    <td>{{music.releaseYear}}</td>
+                                    <td>
+                                        <div class="btn-group" role="group" ng-show="playlists.isEditing">
+                                            <button class="btn btn-default" ng-disabled="$first" ng-click="playlists.moveMusicUp($index)"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Up</button>
+                                            <button class="btn btn-default" ng-disabled="$last" ng-click="playlists.moveMusicDown($index)"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Down</button>
+                                        </div>
+                                        <button class="btn btn-default" ng-click="playlists.removeMusic($index)"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Remove</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="6">
+                                        <button class="btn btn-default" ng-hide="playlists.isEditing" ng-click="playlists.editPlaylist()"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
+                                        <button class="btn btn-default" ng-show="playlists.isEditing" ng-click="playlists.savePlaylist()"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save</button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- Tmp Music -->
+                    <div class="panel panel-default" ng-show="playlists.isEditing">
+                        <div class="panel-heading">
+                            Find Music
+                        </div>
+                        <div class="panel-body">
+                            <div class="input-group">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" ng-click="playlists.findMyMusic()"><span class="glyphicon glyphicon-music"></span> My Music</button>
+                                </span>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" ng-click="playlists.findOtherMusic()"><span class="glyphicon glyphicon-music"></span> Other Music</button>
+                                </span>
+                                <input type="text" class="form-control" placeholder="Search query" ng-model="playlists.tmpMusicQuery">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" ng-click="playlists.findQueryMusic()"><span class="glyphicon glyphicon-search"></span> Find Music</button>
+                                </span>
+                            </div>
+                        </div>
+                        <table class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Artist</th>
+                                    <th>Album</th>
+                                    <th>Year</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="music in playlists.tmpMusic">
+                                    <td>{{music.title}}</td>
+                                    <td>{{music.artist}}</td>
+                                    <td>{{music.album}}</td>
+                                    <td>{{music.releaseYear}}</td>
+                                    <td>
+                                        <button class="btn btn-default" ng-click="playlists.addMusic(music)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Music Catalog -->
+            <div class="jumbotron" ng-show="views.isVisible('catalog')" ng-controller="CatalogController as catalog">
+                {{catalog}}<br/>
+                <h2>Music Catalog</h2>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading"><span class="glyphicon glyphicon-music"></span> My Music</div>
+                    <table class="table table-hover table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Artist</th>
+                                <th>Album</th>
+                                <th>Year</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="music in catalog.music" ng-class="catalog.musicRowClass($index)" ng-click="catalog.editMusic(music)">
+                                <td>{{music.title}}</td>
+                                <td>{{music.artist}}</td>
+                                <td>{{music.album}}</td>
+                                <td>{{music.releaseYear}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="panel-body">
+                        <!-- Add/Edit music -->
+                        <form novalidate ng-submit="login.submit()" enctype="multipart/form-data" method="post" accept-charset="utf-8">
+                            <div ng-show="catalog.isEditing" >
+                                <label for="inputMusicTitle">Title</label>
+                                <input type="text" id="inputMusicTitle" class="form-control" name="title" placeholder="Title" required="" ng-model="catalog.tmpMusic.title">
+                                <label for="inputMusicArtist">Artist</label>
+                                <input type="text" id="inputMusicArtist" class="form-control" name="artist" placeholder="Artist" required="" ng-model="catalog.tmpMusic.artist">
+                                <label for="inputMusicAlbum">Album</label>
+                                <input type="text" id="inputMusicAlbum" class="form-control" name="album" placeholder="Album" required="" ng-model="catalog.tmpMusic.album">
+                                <label for="inputMusicYear">Release Year</label>
+                                <input type="text" id="inputMusicYear" class="form-control" name="releaseYear" placeholder="Release Year (yyyy-mm-dd)" required="" ng-model="catalog.tmpMusic.releaseYear">
+                                <div ng-hide="catalog.tmpMusic.id">
+                                    <label for="inputMusicFile">Music file</label>
+                                    <input type="file" id="inputMusicFile" class="form-control" name="data" placeholder="Music file" ng-required="!catalog.tmpMusic.id" ng-model="catalog.tmpMusic.file">
+                                </div>
+                                <div ng-show="catalog.tmpMusic.id">
+                                    <!-- Audio player -->
+                                    <label for="inputMusicUrl">Music url</label>
+                                    <input type="url" id="inputMusicUrl" class="form-control" readonly="" ng-model="catalog.tmpMusic.url">
+                                    <audio id="inputMusicAudio" preload="none" tabindex="0" controls="" >
+                                        <source ng-src="{{catalog.tmpMusic.url}}" type="{{catalog.getMimetype(catalog.tmpMusic)}}">
+                                        <div class="alert alert-warning" role="alert">
+                                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                            <span class="sr-only">Error:</span>
+                                            Your browser does not support the audio element.
+                                        </div>
+                                    </audio>
+                                </div>
+                            </div>
+                            <button ng-hide="catalog.isEditing" type="submit" class="btn btn-default" ng-click="catalog.newMusic()"><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> New</button>
+                            <div ng-show="catalog.isEditing">
+                                <button ng-hide="catalog.tmpMusic.id" type="submit" class="btn btn-primary" ng-click="catalog.uploadMusic()"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Upload</button>
+                                <button ng-show="catalog.tmpMusic.id" type="submit" class="btn btn-primary" ng-click="catalog.updateMusic()"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Update</button>
+                                <button ng-show="catalog.tmpMusic.id" class="btn btn-danger" ng-click="catalog.detachMusic()"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Detach</button>
+                                <button class="btn btn-default" ng-click="catalog.closeMusic()">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script src="js/jquery-2.1.4.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/angular.min.js"></script>
+        <script src="js/loading-bar.min.js"></script>
+        <script src="js/MusicApp.js"></script>
+    </body>
+</html>
