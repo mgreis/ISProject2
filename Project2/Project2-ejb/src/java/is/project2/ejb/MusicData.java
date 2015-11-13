@@ -20,7 +20,7 @@ public class MusicData {
     private String title;
     private String artist;
     private String album;
-    private Date releaseYear;
+    private int releaseYear;
     private Long accountId;
 
     public MusicData(Long id, URI uri) {
@@ -89,14 +89,14 @@ public class MusicData {
     /**
      * @return the releaseYear
      */
-    public Date getReleaseYear() {
+    public int getReleaseYear() {
         return releaseYear;
     }
 
     /**
      * @param releaseYear the releaseYear to set
      */
-    public void setReleaseYear(Date releaseYear) {
+    public void setReleaseYear(int releaseYear) {
         this.releaseYear = releaseYear;
     }
 

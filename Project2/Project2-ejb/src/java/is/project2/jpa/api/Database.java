@@ -55,7 +55,7 @@ public class Database implements AutoCloseable {
      * @param releaseYear
      * @param filePath
      */
-    public void createMusicFile(Account owner, String title, String artist, String album, Date releaseYear, String filePath, byte[] fileData) {
+    public void createMusicFile(Account owner, String title, String artist, String album, int releaseYear, String filePath, byte[] fileData) {
         insertObject(new MusicFile(owner, title, artist, album, releaseYear, filePath, fileData));
     }
 
@@ -373,7 +373,7 @@ public class Database implements AutoCloseable {
      * @param id
      * @param name
      */
-    public void updateMusicFile(Long id, String album, String artist, String filePath, Date releaseYear, String title) {
+    public void updateMusicFile(Long id, String album, String artist, String filePath, int releaseYear, String title) {
         entityManager.getTransaction().begin();
         final MusicFile musicFile = findMusicFile(id);
         musicFile.setAlbum(album);

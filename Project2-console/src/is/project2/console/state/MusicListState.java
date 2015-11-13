@@ -12,8 +12,6 @@ import is.project2.ejb.SearchCriteria;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
@@ -52,7 +50,7 @@ public class MusicListState extends AbstractState {
                     final String title = app.read("title: ");
                     final String artist = app.read("artist: ");
                     final String album = app.read("album: ");
-                    final Date year = new SimpleDateFormat("y-M-d").parse(app.read("year(yyyy-mm-dd): "));
+                    final int year = Integer.parseInt(app.read("year: "));
                     final File file = new File(app.read("file: "));
                     final byte[] data = new byte[(int) file.length()];
                     try (FileInputStream input = new FileInputStream(file)) {

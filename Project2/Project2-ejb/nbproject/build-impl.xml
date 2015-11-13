@@ -795,31 +795,31 @@ exists or setup the property manually. For example like this:
     <target if="is.jars.in.ejbjar" name="-library-inclusion-in-archive-by-user">
         <copyfiles files="${libs.hibernate4-persistence.classpath}" todir="${build.classes.dir}"/>
         <copyfiles files="${libs.hibernate4-persistencemodelgen.classpath}" todir="${build.classes.dir}"/>
-        <copyfiles files="${libs.MySQLDriver.classpath}" todir="${build.classes.dir}"/>
         <copyfiles files="${file.reference.jandex-1.2.2.Final.jar}" todir="${build.classes.dir}"/>
         <copyfiles files="${file.reference.jboss-client.jar}" todir="${build.classes.dir}"/>
+        <copyfiles files="${file.reference.mysql-connector-java-5.1.37-bin.jar}" todir="${build.classes.dir}"/>
     </target>
     <target if="is.server.weblogic" name="-library-inclusion-in-archive-weblogic">
         <basename file="${libs.hibernate4-persistence.classpath}" property="manifest.libs.hibernate4-persistence.classpath"/>
         <basename file="${libs.hibernate4-persistencemodelgen.classpath}" property="manifest.libs.hibernate4-persistencemodelgen.classpath"/>
-        <basename file="${libs.MySQLDriver.classpath}" property="manifest.libs.MySQLDriver.classpath"/>
         <basename file="${file.reference.jandex-1.2.2.Final.jar}" property="manifest.file.reference.jandex-1.2.2.Final.jar"/>
         <basename file="${file.reference.jboss-client.jar}" property="manifest.file.reference.jboss-client.jar"/>
+        <basename file="${file.reference.mysql-connector-java-5.1.37-bin.jar}" property="manifest.file.reference.mysql-connector-java-5.1.37-bin.jar"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
             <attribute name="Extension-List" value="jar-1 jar-2 jar-3 jar-4 jar-5 "/>
             <attribute name="jar-1-Extension-Name" value="${manifest.libs.hibernate4-persistence.classpath}"/>
             <attribute name="jar-2-Extension-Name" value="${manifest.libs.hibernate4-persistencemodelgen.classpath}"/>
-            <attribute name="jar-3-Extension-Name" value="${manifest.libs.MySQLDriver.classpath}"/>
-            <attribute name="jar-4-Extension-Name" value="${manifest.file.reference.jandex-1.2.2.Final.jar}"/>
-            <attribute name="jar-5-Extension-Name" value="${manifest.file.reference.jboss-client.jar}"/>
+            <attribute name="jar-3-Extension-Name" value="${manifest.file.reference.jandex-1.2.2.Final.jar}"/>
+            <attribute name="jar-4-Extension-Name" value="${manifest.file.reference.jboss-client.jar}"/>
+            <attribute name="jar-5-Extension-Name" value="${manifest.file.reference.mysql-connector-java-5.1.37-bin.jar}"/>
         </manifest>
     </target>
     <target depends="compile" name="library-inclusion-in-manifest">
         <copyfiles files="${libs.hibernate4-persistence.classpath}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.hibernate4-persistencemodelgen.classpath}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${libs.MySQLDriver.classpath}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.jandex-1.2.2.Final.jar}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.jboss-client.jar}" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${file.reference.mysql-connector-java-5.1.37-bin.jar}" todir="${dist.ear.dir}/lib"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update"/>
     </target>
     <target name="-copy-meta-inf">

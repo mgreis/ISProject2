@@ -43,8 +43,7 @@ public class MusicFile implements Serializable {
     
     private byte[] fileData;
 
-    @Temporal(javax.persistence.TemporalType.DATE)
-    private Date releaseYear;
+    private int releaseYear;
 
     @Column(nullable = false)
     private String filePath;
@@ -52,7 +51,7 @@ public class MusicFile implements Serializable {
     public MusicFile() {
     }
 
-    public MusicFile(Account owner, String title, String artist, String album, Date releaseYear, String filePath, byte[] fileData) {
+    public MusicFile(Account owner, String title, String artist, String album, int releaseYear, String filePath, byte[] fileData) {
         this.owner = owner;
         this.title = title;
         this.artist = artist;
@@ -129,14 +128,14 @@ public class MusicFile implements Serializable {
     /**
      * @return the releaseYear
      */
-    public Date getReleaseYear() {
+    public int getReleaseYear() {
         return releaseYear;
     }
 
     /**
      * @param releaseYear the releaseYear to set
      */
-    public void setReleaseYear(Date releaseYear) {
+    public void setReleaseYear(int releaseYear) {
         this.releaseYear = releaseYear;
     }
 

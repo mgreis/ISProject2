@@ -36,19 +36,18 @@ import javax.persistence.criteria.Predicate;
  *
  * @author mgreis
  */
+
+
 @Singleton
-@Startup
 @LocalBean
 public class DatabaseBean implements AutoCloseable {
 
-    private EntityManager entityManager;
-    private EntityManagerFactory entityManagerFactory;
+   
+    private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("JPAPROJECT2PU");
+    private EntityManager entityManager = entityManagerFactory.createEntityManager();
+    
+    
 
-    @PostConstruct
-    void init() {
-        entityManagerFactory = Persistence.createEntityManagerFactory("JPAPROJECT2PU");
-        entityManager = entityManagerFactory.createEntityManager();
-    }
 
     @Override
     public void close() {
@@ -65,9 +64,10 @@ public class DatabaseBean implements AutoCloseable {
      * @param album
      * @param releaseYear
      * @param filePath
+     * @param fileData
      * @return
      */
-    public Long createMusicFile(Account owner, String title, String artist, String album, Date releaseYear, String filePath, byte[] fileData) {
+    public Long createMusicFile(Account owner, String title, String artist, String album, int releaseYear, String filePath, byte[] fileData) {
         MusicFile aux = new MusicFile(owner, title, artist, album, releaseYear, filePath, fileData);
         insertObject(aux);
         return aux.getId();
@@ -538,7 +538,7 @@ public class DatabaseBean implements AutoCloseable {
      * @param id
      * @param name
      */
-    public void updateMusicFile(Long id, String album, String artist, String filePath, Date releaseYear, String title) {
+    public void updateMusicFile(Long id, String album, String artist, String filePath, int releaseYear, String title) {
         entityManager.getTransaction().begin();
         final MusicFile musicFile = getMusicFile(id);
         musicFile.setAlbum(album);

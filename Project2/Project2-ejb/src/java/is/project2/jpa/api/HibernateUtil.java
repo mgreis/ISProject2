@@ -1,22 +1,23 @@
 package is.project2.jpa.api;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
 
 public class HibernateUtil {
 
     private static final SessionFactory sessionFactory
             = buildSessionFactory();
+    private static ServiceRegistry serviceRegistry;
 
     private static SessionFactory buildSessionFactory() {
-        try {
-            // Create the SessionFactory from hibernate.cfg.xml
-            return new Configuration().configure().buildSessionFactory();
-        } catch (Throwable ex) {
-            // Make sure you log the exception
-            System.err.println("Initial SessionFactory creation failed." + ex);
-            throw new ExceptionInInitializerError(ex);
-        }
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        serviceRegistry = new StandardServiceRegistryBuilder().applySettings(
+            configuration.getProperties()).build();
+        return configuration.buildSessionFactory(serviceRegistry);
+        
     }
 
     public static SessionFactory getSessionFactory() {

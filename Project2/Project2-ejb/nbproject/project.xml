@@ -7,9 +7,9 @@
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <included-library dirs="200">libs.hibernate4-persistence.classpath</included-library>
             <included-library dirs="200">libs.hibernate4-persistencemodelgen.classpath</included-library>
-            <included-library dirs="200">libs.MySQLDriver.classpath</included-library>
             <included-library dirs="200">file.reference.jandex-1.2.2.Final.jar</included-library>
             <included-library dirs="200">file.reference.jboss-client.jar</included-library>
+            <included-library dirs="200">file.reference.mysql-connector-java-5.1.37-bin.jar</included-library>
             <source-roots>
                 <root id="src.dir"/>
             </source-roots>

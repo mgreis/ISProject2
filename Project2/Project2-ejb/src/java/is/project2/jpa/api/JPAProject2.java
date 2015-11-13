@@ -29,7 +29,7 @@ public class JPAProject2 {
      */
     public static void main(String[] args) {
 
-        ArrayList<Account> userList = new ArrayList();
+        ArrayList<Account> userList = new ArrayList<Account>();
 
         userList.add(new Account("jeremy@pearljam.com", "ten"));
 

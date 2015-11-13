@@ -8,8 +8,6 @@ package is.project2.console.state;
 import is.project2.console.MusicApp;
 import is.project2.ejb.MusicData;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
@@ -68,7 +66,7 @@ public class MusicState extends AbstractState {
                 }
                 case "change-year": {
                     if (canChange(music)) {
-                        final Date year = new SimpleDateFormat("y-M-d").parse(app.read("year(yyyy-mm-dd): "));
+                        final int year = Integer.parseInt(app.read("year: "));
                         music.setReleaseYear(year);
                         app.musicManager.save(app.accountId, music);
                     }

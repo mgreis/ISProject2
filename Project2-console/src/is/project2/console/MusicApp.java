@@ -32,7 +32,7 @@ public class MusicApp implements Runnable {
     public final PrintWriter writer;
     public AccountManagerBeanRemote accountManager;
     public PlaylistManagerBeanRemote playlistManager;
-    public MusicManagerBeanRemote musicManager;
+    public MusicFileManagerBeanRemote musicManager;
     public Long accountId;
     public Long playlistId;
     public Long musicId;
