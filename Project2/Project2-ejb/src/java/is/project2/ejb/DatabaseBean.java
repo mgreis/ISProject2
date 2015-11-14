@@ -30,8 +30,11 @@ import javax.annotation.PostConstruct;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.Stateless;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Predicate;
+import javax.transaction.Transactional;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -39,14 +42,14 @@ import javax.persistence.criteria.Predicate;
  */
 
 
-@Singleton
+@Stateless
 @LocalBean
 public class DatabaseBean{
 
    
     //private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("JPAPROJECT2PU");
     //private EntityManager entityManager = entityManagerFactory.createEntityManager();
-    @PersistenceContext(name="JPAPROJECT2PU")
+    @PersistenceContext
     EntityManager entityManager; 
     
 
@@ -108,17 +111,18 @@ public class DatabaseBean{
      * @param password
      * @return
      */
+     
     public Long createUser(String email, String password) {
         Account account = new Account(email, password);
-        insertObject(account);
+        entityManager.persist(account);
         return account.getId();
     }
 
     public void detatchUserFromMusicFile(Long id) {
-        entityManager.getTransaction().begin();
+        
         final MusicFile musicFile = getMusicFile(id);
         musicFile.setOwner(null);
-        entityManager.getTransaction().commit();
+        
     }
 
     /**
@@ -127,9 +131,9 @@ public class DatabaseBean{
      * @param id
      */
     public void deleteMusicFile(Long id) {
-        entityManager.getTransaction().begin();
+      
         entityManager.remove(entityManager.find(MusicFile.class, id));
-        entityManager.getTransaction().commit();
+        
     }
 
     /**
@@ -150,13 +154,13 @@ public class DatabaseBean{
         final List<PlaylistFile> auxList = entityManager.createQuery(query).getResultList();
 
         //start deleting from the PlayListfile table
-        //entityManager.getTransaction().begin();
+       
         for (PlaylistFile auxVar : auxList) {
             entityManager.remove(auxVar);
 
         }
         entityManager.remove(entityManager.find(Playlist.class, id));
-        //entityManager.getTransaction().commit();
+        
     }
 
     /**
@@ -165,9 +169,9 @@ public class DatabaseBean{
      * @param id
      */
     public void deletePlaylistFile(Long id) {
-        //entityManager.getTransaction().begin();
+        
         entityManager.remove(entityManager.find(PlaylistFile.class, id));
-        //entityManager.getTransaction().commit();
+        
     }
 
     /**
@@ -176,9 +180,9 @@ public class DatabaseBean{
      * @param id
      */
     public void deleteUser(Long id) {
-        //entityManager.getTransaction().begin();
+        
         entityManager.remove(entityManager.find(Account.class, id));
-        //entityManager.getTransaction().commit();
+        
     }
 
     /**
@@ -186,10 +190,12 @@ public class DatabaseBean{
      *
      * @param object
      */
+    @Transactional
     private void insertObject(Object object) {
-        //entityManager.getTransaction().begin();
+        
         entityManager.persist(object);
-        //entityManager.getTransaction().commit();
+        
+        
     }
 
     /**
@@ -527,10 +533,10 @@ public class DatabaseBean{
     public void updatePlaylist(Long accountId, PlaylistData playlist) {
 
         if (this.getUser(accountId) != null) {
-            entityManager.getTransaction().begin();
+            
             Playlist list = this.getPlaylist(playlist.getId());
             list.setName(playlist.getName());
-            entityManager.getTransaction().commit();
+            
         }
     }
 
@@ -541,14 +547,14 @@ public class DatabaseBean{
      * @param name
      */
     public void updateMusicFile(Long id, String album, String artist, String filePath, int releaseYear, String title) {
-        entityManager.getTransaction().begin();
+        
         final MusicFile musicFile = getMusicFile(id);
         musicFile.setAlbum(album);
         musicFile.setArtist(artist);
         musicFile.setFilePath(filePath);
         musicFile.setReleaseYear(releaseYear);
         musicFile.setTitle(title);
-        entityManager.getTransaction().commit();
+        
     }
 
     /**
@@ -559,11 +565,11 @@ public class DatabaseBean{
      * @param password
      */
     public void updateUser(Long id, String email, String password) {
-        entityManager.getTransaction().begin();
+       
         Account user = getUserAccount(id);
         user.setEmail(email);
         user.setPassword(password);
-        entityManager.getTransaction().commit();
+        
 
     }
 
