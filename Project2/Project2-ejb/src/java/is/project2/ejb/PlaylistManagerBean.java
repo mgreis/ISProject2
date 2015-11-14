@@ -83,4 +83,8 @@ public class PlaylistManagerBean implements PlaylistManagerBeanRemote {
         }
     }
 
+    @Override
+    public void ping() {
+    }
+
 }

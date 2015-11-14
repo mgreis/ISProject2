@@ -53,8 +53,11 @@ public class MusicApp implements Runnable {
         writer.println("MusicApp");
         try {
             accountManager = Beans.lookupAccountManager();
+            accountManager.ping();
             playlistManager = Beans.lookupPlaylistManager();
+            playlistManager.ping();
             musicManager = Beans.lookupMusicManager();
+            musicManager.ping();
             accountId = null;
             playlistId = null;
             musicId = null;

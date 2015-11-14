@@ -5,11 +5,6 @@
  */
 package is.project2.ejb;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -91,4 +86,8 @@ public class MusicFileManagerBean implements MusicFileManagerBeanRemote {
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
+
+    @Override
+    public void ping() {
+    }
 }

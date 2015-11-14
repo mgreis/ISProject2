@@ -77,4 +77,8 @@ public class AccountManagerBean implements AccountManagerBeanRemote {
         database.deleteUser(id);
     }
 
+    @Override
+    public void ping() {
+    }
+
 }

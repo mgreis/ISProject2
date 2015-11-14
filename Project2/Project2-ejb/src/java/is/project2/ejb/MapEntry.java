@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author Mário
  */
-final class MapEntry <Long,String> implements Map.Entry<Long,String>{
+final class MapEntry implements Map.Entry<Long,String>{
     private final Long key;
     private String value;
     
