@@ -49,9 +49,10 @@ public class Beans {
      *
      * @return Bean proxy.
      * @throws NamingException If a naming exception occurred.
-     * @see https://docs.jboss.org/author/display/WFLY8/EJB+invocations+from+a+remote+client+using+JNDI
+     * @see
+     * https://docs.jboss.org/author/display/WFLY8/EJB+invocations+from+a+remote+client+using+JNDI
      */
-    public static <T> T lookup(Class beanClass, Class viewClass) throws NamingException {
+    public static <T> T lookup(Class beanClass, Class viewClass) throws NamingException , MusicAppException {
         assert (beanClass != null);
         assert (viewClass != null);
         final Hashtable jndiProperties = new Hashtable();
@@ -72,8 +73,8 @@ public class Beans {
      * @return Account manager proxy.
      * @throws NamingException If a naming exception occurred.
      */
-    public static AccountManagerBeanRemote lookupAccountManager() throws NamingException {
-        return lookup(AccountManagerBean.class, AccountManagerBeanRemote.class);
+    public static AccountManagerBeanRemote lookupAccountManager() throws NamingException , MusicAppException{
+        return (AccountManagerBeanRemote) InitialContext.doLookup("Project2-ejb/AccountManagerBean!is.project2.ejb.AccountManagerBeanRemote");
     }
 
     /**
@@ -82,8 +83,8 @@ public class Beans {
      * @return Playlist manager proxy.
      * @throws NamingException If a naming exception occurred.
      */
-    public static PlaylistManagerBeanRemote lookupPlaylistManager() throws NamingException {
-        return lookup(PlaylistManagerBean.class, PlaylistManagerBeanRemote.class);
+    public static PlaylistManagerBeanRemote lookupPlaylistManager() throws NamingException, MusicAppException {
+        return (PlaylistManagerBeanRemote) InitialContext.doLookup("Project2-ejb/PlaylistManagerBean!is.project2.ejb.PlaylistManagerBeanRemote");
     }
 
     /**
@@ -92,8 +93,8 @@ public class Beans {
      * @return Music manager proxy.
      * @throws NamingException If a naming exception occurred.
      */
-    public static MusicFileManagerBeanRemote lookupMusicManager() throws NamingException {
-        return lookup(MusicFileManagerBean.class, MusicFileManagerBeanRemote.class);
+    public static MusicFileManagerBeanRemote lookupMusicManager() throws NamingException, MusicAppException {
+        return (MusicFileManagerBeanRemote) InitialContext.doLookup("Project2-ejb/MusicFileManagerBean!is.project2.ejb.MusicFileManagerBeanRemote");
     }
 
 }

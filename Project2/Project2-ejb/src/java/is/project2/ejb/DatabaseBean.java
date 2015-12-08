@@ -72,7 +72,7 @@ public class DatabaseBean{
      * @param fileData
      * @return
      */
-    public Long createMusicFile(Account owner, String title, String artist, String album, int releaseYear, String filePath, byte[] fileData) {
+    public Long createMusicFile(Account owner, String title, String artist, String album, int releaseYear, String filePath, byte[] fileData)throws MusicAppException {
         MusicFile aux = new MusicFile(owner, title, artist, album, releaseYear, filePath, fileData);
         insertObject(aux);
         return aux.getId();
@@ -85,7 +85,7 @@ public class DatabaseBean{
      * @param owner
      * @return
      */
-    public Long createPlaylist(String name, AccountData owner) {
+    public Long createPlaylist(String name, AccountData owner)throws MusicAppException {
         Playlist aux = new Playlist(name, this.getAccount(owner.getId()));
         insertObject(aux);
         return aux.getId();
@@ -97,7 +97,7 @@ public class DatabaseBean{
      * @param playlist
      * @param musicFile
      */
-    public Long createPlaylistFile(Playlist playlist, MusicFile musicFile) {
+    public Long createPlaylistFile(Playlist playlist, MusicFile musicFile)throws MusicAppException {
         // @todo index
         PlaylistFile aux = new PlaylistFile(playlist, musicFile);
         insertObject(aux);
@@ -112,13 +112,13 @@ public class DatabaseBean{
      * @return
      */
      
-    public Long createUser(String email, String password) {
+    public Long createUser(String email, String password)throws MusicAppException {
         Account account = new Account(email, password);
         entityManager.persist(account);
         return account.getId();
     }
 
-    public void detatchUserFromMusicFile(Long id) {
+    public void detatchUserFromMusicFile(Long id) throws MusicAppException{
         
         final MusicFile musicFile = getMusicFile(id);
         musicFile.setOwner(null);
@@ -130,7 +130,7 @@ public class DatabaseBean{
      *
      * @param id
      */
-    public void deleteMusicFile(Long id) {
+    public void deleteMusicFile(Long id)throws MusicAppException {
       
         entityManager.remove(entityManager.find(MusicFile.class, id));
         
@@ -142,7 +142,7 @@ public class DatabaseBean{
      *
      * @param id
      */
-    public void deletePlaylist(Long id) {
+    public void deletePlaylist(Long id) throws MusicAppException{
 
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<PlaylistFile> query = builder.createQuery(PlaylistFile.class);
@@ -168,7 +168,7 @@ public class DatabaseBean{
      *
      * @param id
      */
-    public void deletePlaylistFile(Long id) {
+    public void deletePlaylistFile(Long id) throws MusicAppException{
         
         entityManager.remove(entityManager.find(PlaylistFile.class, id));
         
@@ -179,7 +179,7 @@ public class DatabaseBean{
      *
      * @param id
      */
-    public void deleteUser(Long id) {
+    public void deleteUser(Long id) throws MusicAppException{
         
         entityManager.remove(entityManager.find(Account.class, id));
         
@@ -191,7 +191,7 @@ public class DatabaseBean{
      * @param object
      */
     @Transactional
-    private void insertObject(Object object) {
+    private void insertObject(Object object) throws MusicAppException{
         
         entityManager.persist(object);
         
@@ -204,7 +204,7 @@ public class DatabaseBean{
      * @param id
      * @return
      */
-    public MusicFile getMusicFile(Long id) {
+    public MusicFile getMusicFile(Long id)throws MusicAppException {
         return entityManager.find(MusicFile.class, id);
     }
 
@@ -214,7 +214,7 @@ public class DatabaseBean{
      * @param id
      * @return
      */
-    public MusicData getMusicData(Long id) {
+    public MusicData getMusicData(Long id) throws MusicAppException{
         return this.musicFileToMusicData(entityManager.find(MusicFile.class, id));
     }
 
@@ -224,11 +224,11 @@ public class DatabaseBean{
      * @param id
      * @return
      */
-    public Playlist getPlaylist(Long id) {
+    public Playlist getPlaylist(Long id) throws MusicAppException{
         return entityManager.find(Playlist.class, id);
     }
 
-    public Map.Entry<Long, String>[] getPlaylistsFromUser(Long accountId, SortOrder sort) {
+    public Map.Entry<Long, String>[] getPlaylistsFromUser(Long accountId, SortOrder sort) throws MusicAppException{
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Playlist> query = builder.createQuery(Playlist.class);
         Account user = this.getUserAccount(accountId);
@@ -257,7 +257,7 @@ public class DatabaseBean{
      * @param id
      * @return
      */
-    public PlaylistData getPlaylistData(Long id) {
+    public PlaylistData getPlaylistData(Long id) throws MusicAppException{
         Playlist aux = entityManager.find(Playlist.class, id);
         PlaylistData data = new PlaylistData(id);
         data.setName(aux.getName());
@@ -274,7 +274,7 @@ public class DatabaseBean{
      * @param id
      * @return
      */
-    public PlaylistFile getPlaylistFile(Long id) {
+    public PlaylistFile getPlaylistFile(Long id) throws MusicAppException{
         return entityManager.find(PlaylistFile.class, id);
     }
 
@@ -284,7 +284,7 @@ public class DatabaseBean{
      * @param id
      * @return
      */
-    public Account getUserAccount(Long id) {
+    public Account getUserAccount(Long id) throws MusicAppException{
         return entityManager.find(Account.class, id);
     }
 
@@ -294,7 +294,7 @@ public class DatabaseBean{
      * @param id
      * @return
      */
-    public MusicData[] getMusicsFromUser(Long accountId) {
+    public MusicData[] getMusicsFromUser(Long accountId)throws MusicAppException {
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
         Account user = this.getUserAccount(accountId);
@@ -316,7 +316,7 @@ public class DatabaseBean{
         return output;
     }
 
-    public MusicData[] getMusicsByArtist(String artist) {
+    public MusicData[] getMusicsByArtist(String artist)throws MusicAppException {
 
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
@@ -339,7 +339,7 @@ public class DatabaseBean{
         return output;
     }
 
-    public MusicData[] getMusicsByArtistAndTitle(String artist, String title) {
+    public MusicData[] getMusicsByArtistAndTitle(String artist, String title) throws MusicAppException{
 
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
@@ -367,7 +367,7 @@ public class DatabaseBean{
         return output;
     }
 
-    public MusicData[] getMusicsByTitle(String title) {
+    public MusicData[] getMusicsByTitle(String title)throws MusicAppException {
 
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
@@ -396,7 +396,7 @@ public class DatabaseBean{
      * @param id
      * @return
      */
-    public MusicData[] getMusicsFromPlaylist(Long id) {
+    public MusicData[] getMusicsFromPlaylist(Long id) throws MusicAppException{
         
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<PlaylistFile> query = builder.createQuery(PlaylistFile.class);
@@ -424,7 +424,7 @@ public class DatabaseBean{
      * @param id
      * @return
      */
-    public MusicData[] getMusicsFromOtherUsers(Long accountId) {
+    public MusicData[] getMusicsFromOtherUsers(Long accountId) throws MusicAppException{
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
         Account user = this.getUserAccount(accountId);
@@ -454,7 +454,7 @@ public class DatabaseBean{
      * @param password
      * @return
      */
-    public AccountData getUser(String email, String password) {
+    public AccountData getUser(String email, String password)throws MusicAppException {
         AccountData user = null;
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Account> query = builder.createQuery(Account.class);
@@ -482,7 +482,7 @@ public class DatabaseBean{
      * @param id
      * @return
      */
-    public AccountData getUser(Long id) {
+    public AccountData getUser(Long id)throws MusicAppException{
         AccountData user = null;
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Account> query = builder.createQuery(Account.class);
@@ -501,7 +501,7 @@ public class DatabaseBean{
         return user;
     }
 
-    public Account getAccount(Long id) {
+    public Account getAccount(Long id) throws MusicAppException{
 
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Account> query = builder.createQuery(Account.class);
@@ -524,13 +524,13 @@ public class DatabaseBean{
      * @param musicList
      * @param playlist
      */
-    public void InsertMusicListToPlaylist(ArrayList<MusicFile> musicList, Playlist playlist) {
+    public void InsertMusicListToPlaylist(ArrayList<MusicFile> musicList, Playlist playlist)throws MusicAppException {
         for (MusicFile music : musicList) {
             this.createPlaylistFile(playlist, music);
         }
     }
 
-    public void updatePlaylist(Long accountId, PlaylistData playlist) {
+    public void updatePlaylist(Long accountId, PlaylistData playlist) throws MusicAppException{
 
         if (this.getUser(accountId) != null) {
             
@@ -546,7 +546,7 @@ public class DatabaseBean{
      * @param id
      * @param name
      */
-    public void updateMusicFile(Long id, String album, String artist, String filePath, int releaseYear, String title) {
+    public void updateMusicFile(Long id, String album, String artist, String filePath, int releaseYear, String title)throws MusicAppException {
         
         final MusicFile musicFile = getMusicFile(id);
         musicFile.setAlbum(album);
@@ -564,7 +564,7 @@ public class DatabaseBean{
      * @param email
      * @param password
      */
-    public void updateUser(Long id, String email, String password) {
+    public void updateUser(Long id, String email, String password) throws MusicAppException{
        
         Account user = getUserAccount(id);
         user.setEmail(email);
@@ -573,7 +573,7 @@ public class DatabaseBean{
 
     }
 
-    private MusicData musicFileToMusicData(MusicFile source) {
+    private MusicData musicFileToMusicData(MusicFile source) throws MusicAppException{
 
         try {
             MusicData target = new MusicData(source.getId(), new URI(source.getFilePath()));

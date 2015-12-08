@@ -5,6 +5,7 @@
  */
 package is.project2.jpa.api;
 
+import is.project2.ejb.MusicAppException;
 import is.project2.ejb.MusicData;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,7 +56,7 @@ public class Database implements AutoCloseable {
      * @param releaseYear
      * @param filePath
      */
-    public void createMusicFile(Account owner, String title, String artist, String album, int releaseYear, String filePath, byte[] fileData) {
+    public void createMusicFile(Account owner, String title, String artist, String album, int releaseYear, String filePath, byte[] fileData) throws MusicAppException{
         insertObject(new MusicFile(owner, title, artist, album, releaseYear, filePath, fileData));
     }
 
@@ -65,7 +66,7 @@ public class Database implements AutoCloseable {
      * @param name
      * @param owner
      */
-    public void createPlaylist(String name, Account owner) {
+    public void createPlaylist(String name, Account owner)throws MusicAppException {
         insertObject(new Playlist(name, owner));
     }
 
@@ -75,7 +76,7 @@ public class Database implements AutoCloseable {
      * @param playlist
      * @param musicFile
      */
-    public void createPlaylistFile(Playlist playlist, MusicFile musicFile) {
+    public void createPlaylistFile(Playlist playlist, MusicFile musicFile) throws MusicAppException{
         // @todo index
         insertObject(new PlaylistFile(playlist, musicFile));
     }
@@ -86,13 +87,13 @@ public class Database implements AutoCloseable {
      * @param email
      * @param password
      */
-    public Long createUser(String email, String password) {
+    public Long createUser(String email, String password) throws MusicAppException{
         Account account = new Account(email, password);
         insertObject(account);
         return account.getId();
     }
 
-    public void detatchUserFromMusicFile(Long id) {
+    public void detatchUserFromMusicFile(Long id) throws MusicAppException{
         entityManager.getTransaction().begin();
         final MusicFile musicFile = findMusicFile(id);
         musicFile.setOwner(null);
@@ -104,7 +105,7 @@ public class Database implements AutoCloseable {
      *
      * @param id
      */
-    public void deleteMusicFile(Long id) {
+    public void deleteMusicFile(Long id) throws MusicAppException{
         entityManager.getTransaction().begin();
         entityManager.remove(entityManager.find(MusicFile.class, id));
         entityManager.getTransaction().commit();
@@ -115,7 +116,7 @@ public class Database implements AutoCloseable {
      *
      * @param id
      */
-    public void deletePlaylist(Long id) {
+    public void deletePlaylist(Long id) throws MusicAppException{
         entityManager.getTransaction().begin();
         entityManager.remove(entityManager.find(Playlist.class, id));
         entityManager.getTransaction().commit();
@@ -126,7 +127,7 @@ public class Database implements AutoCloseable {
      *
      * @param id
      */
-    public void deletePlaylistFile(Long id) {
+    public void deletePlaylistFile(Long id) throws MusicAppException{
         entityManager.getTransaction().begin();
         entityManager.remove(entityManager.find(PlaylistFile.class, id));
         entityManager.getTransaction().commit();
@@ -137,7 +138,7 @@ public class Database implements AutoCloseable {
      *
      * @param id
      */
-    public void deleteUser(Long id) {
+    public void deleteUser(Long id) throws MusicAppException{
         entityManager.getTransaction().begin();
         entityManager.remove(entityManager.find(Account.class, id));
         entityManager.getTransaction().commit();
@@ -148,7 +149,7 @@ public class Database implements AutoCloseable {
      *
      * @param object
      */
-    private void insertObject(Object object) {
+    private void insertObject(Object object)throws MusicAppException {
         entityManager.getTransaction().begin();
         entityManager.persist(object);
         entityManager.getTransaction().commit();
@@ -160,7 +161,7 @@ public class Database implements AutoCloseable {
      * @param id
      * @return
      */
-    public MusicFile findMusicFile(Long id) {
+    public MusicFile findMusicFile(Long id) throws MusicAppException{
         return entityManager.find(MusicFile.class, id);
     }
 
@@ -170,7 +171,7 @@ public class Database implements AutoCloseable {
      * @param id
      * @return
      */
-    public Playlist findPlaylist(Long id) {
+    public Playlist findPlaylist(Long id) throws MusicAppException{
         return entityManager.find(Playlist.class, id);
     }
 
@@ -180,7 +181,7 @@ public class Database implements AutoCloseable {
      * @param id
      * @return
      */
-    public PlaylistFile findPlaylistFile(Long id) {
+    public PlaylistFile findPlaylistFile(Long id) throws MusicAppException{
         return entityManager.find(PlaylistFile.class, id);
     }
 
@@ -190,7 +191,7 @@ public class Database implements AutoCloseable {
      * @param id
      * @return
      */
-    public Account findUser(Long id) {
+    public Account findUser(Long id) throws MusicAppException{
         return entityManager.find(Account.class, id);
     }
 
@@ -200,7 +201,7 @@ public class Database implements AutoCloseable {
      * @param id
      * @return
      */
-    public MusicData[] getMusicsFromUser(Long id) {
+    public MusicData[] getMusicsFromUser(Long id) throws MusicAppException{
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
 
@@ -221,7 +222,7 @@ public class Database implements AutoCloseable {
         return output;
     }
 
-    public ArrayList<MusicFile> getMusicsByArtist(String artist) {
+    public ArrayList<MusicFile> getMusicsByArtist(String artist)throws MusicAppException {
         final ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
@@ -241,7 +242,7 @@ public class Database implements AutoCloseable {
         return musicList;
     }
 
-    public ArrayList<MusicFile> getMusicsByArtistAndTitle(String artist, String title) {
+    public ArrayList<MusicFile> getMusicsByArtistAndTitle(String artist, String title)throws MusicAppException {
         ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
@@ -261,7 +262,7 @@ public class Database implements AutoCloseable {
         return musicList;
     }
 
-    public ArrayList<MusicFile> getMusicsByTitle(String title) {
+    public ArrayList<MusicFile> getMusicsByTitle(String title) throws MusicAppException{
         final ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
@@ -287,7 +288,7 @@ public class Database implements AutoCloseable {
      * @param id
      * @return
      */
-    public ArrayList<MusicFile> getMusicsFromPlaylist(Long id) {
+    public ArrayList<MusicFile> getMusicsFromPlaylist(Long id) throws MusicAppException{
         final ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<PlaylistFile> query = builder.createQuery(PlaylistFile.class);
@@ -314,7 +315,7 @@ public class Database implements AutoCloseable {
      * @param id
      * @return
      */
-    public ArrayList<MusicFile> getMusicsFromOtherUsers(Long id) {
+    public ArrayList<MusicFile> getMusicsFromOtherUsers(Long id)throws MusicAppException {
         final ArrayList<MusicFile> musicList = new ArrayList<MusicFile>();
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<MusicFile> query = builder.createQuery(MusicFile.class);
@@ -334,7 +335,7 @@ public class Database implements AutoCloseable {
         return musicList;
     }
 
-    public Long getUser(String email, String password) {
+    public Long getUser(String email, String password) throws MusicAppException{
         Long userId = null;
         final CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Account> query = builder.createQuery(Account.class);
@@ -354,13 +355,13 @@ public class Database implements AutoCloseable {
      * @param musicList
      * @param playlist
      */
-    public void InsertMusicListToPlaylist(ArrayList<MusicFile> musicList, Playlist playlist) {
+    public void InsertMusicListToPlaylist(ArrayList<MusicFile> musicList, Playlist playlist) throws MusicAppException{
         for (MusicFile music : musicList) {
             this.createPlaylistFile(playlist, music);
         }
     }
 
-    public void updatePlaylist(Long id, String name) {
+    public void updatePlaylist(Long id, String name) throws MusicAppException{
         entityManager.getTransaction().begin();
         Playlist playlist = findPlaylist(id);
         playlist.setName(name);
@@ -373,7 +374,7 @@ public class Database implements AutoCloseable {
      * @param id
      * @param name
      */
-    public void updateMusicFile(Long id, String album, String artist, String filePath, int releaseYear, String title) {
+    public void updateMusicFile(Long id, String album, String artist, String filePath, int releaseYear, String title)throws MusicAppException {
         entityManager.getTransaction().begin();
         final MusicFile musicFile = findMusicFile(id);
         musicFile.setAlbum(album);
@@ -391,7 +392,7 @@ public class Database implements AutoCloseable {
      * @param email
      * @param password
      */
-    public void updateUser(Long id, String email, String password) {
+    public void updateUser(Long id, String email, String password)throws MusicAppException {
         entityManager.getTransaction().begin();
         Account user = findUser(id);
         user.setEmail(email);
@@ -400,7 +401,7 @@ public class Database implements AutoCloseable {
 
     }
 
-    private MusicData musicFileToMusicData(MusicFile source) {
+    private MusicData musicFileToMusicData(MusicFile source)throws MusicAppException {
 
         try {
             MusicData target = new MusicData(source.getId(), new URI(source.getFilePath()));
